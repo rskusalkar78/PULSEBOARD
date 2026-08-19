@@ -19,6 +19,7 @@ const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
 
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<PageLoader />}>
@@ -96,6 +97,11 @@ export const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      // Design System Showcase Route
+      {
+        path: 'design-system',
+        element: withSuspense(DesignSystemPage),
       },
       // 404 Catch-All Route
       {
