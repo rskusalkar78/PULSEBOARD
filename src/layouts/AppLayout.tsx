@@ -1,16 +1,26 @@
 import { Outlet } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 export function AppLayout() {
   return (
-    <AuthProvider>
-      <ErrorBoundary>
-        <div className="min-h-screen bg-slate-950 font-sans text-slate-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
-          <Outlet />
-        </div>
-      </ErrorBoundary>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ErrorBoundary>
+          <div
+            className="min-h-screen font-sans antialiased"
+            style={{
+              backgroundColor: 'var(--pb-bg-background)',
+              color: 'var(--pb-text-primary)',
+              fontFamily: 'var(--pb-font-sans)',
+            }}
+          >
+            <Outlet />
+          </div>
+        </ErrorBoundary>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
