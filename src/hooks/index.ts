@@ -10,3 +10,6 @@ export function useIsMounted(): boolean {
 
   return isMounted;
 }
+
+// Re-export theme hook for convenience — primary source is ThemeContext
+export { useTheme, type ThemeMode, type ResolvedTheme } from '@/context/ThemeContext';

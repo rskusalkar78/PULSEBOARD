@@ -19,6 +19,7 @@ export * from './Display/Card';
 export * from './Display/EmptyState';
 export * from './Display/Progress';
 export * from './Display/Separator';
+export * from './Display/ThemeToggle';
 
 // Overlay primitives
 export * from './Overlay/Dialog';
