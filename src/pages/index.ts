@@ -1,12 +1,4 @@
+// Central export for pages
 export * from './DashboardPage';
 export * from './AnalyticsPage';
-export * from './ActivityPage';
 export * from './ProjectsPage';
-export * from './TeamPage';
-export * from './SettingsPage';
-export * from './NotificationsPage';
-export * from './ProfilePage';
-export * from './LoginPage';
-export * from './NotFoundPage';
-export * from './DesignSystemPage';
-export * from './ThemeVerificationPage';

@@ -7,3 +7,4 @@ export * from './UserMenu';
 export * from './NotificationButton';
 export * from './PageHeader';
 export * from './Breadcrumb';
+export * from './ContentContainer';
