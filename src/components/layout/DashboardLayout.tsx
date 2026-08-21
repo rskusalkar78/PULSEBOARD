@@ -64,7 +64,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       {isMobile && <MobileNav isOpen={isMobileNavOpen} onClose={handleCloseMobileNav} />}
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
+      <div
+        className={cn(
+          'flex flex-1 flex-col overflow-hidden',
+          'transition-all duration-300 ease-in-out',
+          // Add left margin on desktop when sidebar is open and persistent
+          !isMobile && !isTablet && isSidebarOpen && 'ml-64',
+          // Full width when sidebar is closed or on tablet/mobile
+          (!isSidebarOpen || isTablet || isMobile) && 'ml-0'
+        )}
+      >
         {/* Top Navigation */}
         <TopNavigation
           onToggleSidebar={handleToggleSidebar}
@@ -73,14 +82,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         />
 
         {/* Page Content */}
-        <main
-          className={cn(
-            'flex-1 overflow-x-hidden overflow-y-auto',
-            'bg-slate-50 dark:bg-slate-950',
-            'transition-all duration-300 ease-in-out'
-          )}
-        >
-          <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-[1920px]">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 dark:bg-slate-950">
+          <div className="w-full px-4 py-6 sm:px-6 lg:px-8 max-w-[1920px] mx-auto">
             {children || <Outlet />}
           </div>
         </main>
