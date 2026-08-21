@@ -20,6 +20,7 @@ const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
+const ThemeVerificationPage = lazy(() => import('@/pages/ThemeVerificationPage'));
 
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<PageLoader />}>
@@ -102,6 +103,11 @@ export const router = createBrowserRouter([
       {
         path: 'design-system',
         element: withSuspense(DesignSystemPage),
+      },
+      // Theme Verification Route
+      {
+        path: 'theme-verification',
+        element: withSuspense(ThemeVerificationPage),
       },
       // 404 Catch-All Route
       {
