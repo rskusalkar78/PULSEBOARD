@@ -8,3 +8,5 @@ export * from './NotificationsPage';
 export * from './ProfilePage';
 export * from './LoginPage';
 export * from './NotFoundPage';
+export * from './DesignSystemPage';
+export * from './ThemeVerificationPage';

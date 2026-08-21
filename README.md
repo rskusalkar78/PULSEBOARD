@@ -2,6 +2,15 @@
 
 A modern, production-grade real-time dashboard and analytics platform built with React 19, TypeScript, Vite, and Tailwind CSS.
 
+## ✨ Features
+
+- 🎨 **Complete Theme System** — Light, Dark, and System modes with zero-flash switching
+- 🎯 **Design Tokens** — 150+ CSS variables for consistent styling
+- ♿ **WCAG AA Compliant** — Accessible color contrast ratios
+- 🔄 **Theme Persistence** — Remembers your preference across sessions
+- 🚀 **26+ UI Components** — Professional, accessible, and fully typed
+- 📱 **Responsive Design** — Mobile-first approach
+
 ## 🚀 Tech Stack
 
 - **Framework**: [React 19](https://react.dev/)
@@ -99,6 +108,50 @@ Preview the production build locally:
 ```bash
 npm run preview
 ```
+
+---
+
+## 🎨 Theme System
+
+PulseBoard includes a comprehensive theme system with:
+
+- **Light Theme** — Clean, bright interface for daytime use
+- **Dark Theme** — Eye-friendly dark mode for low-light environments
+- **System Theme** — Automatically follows your OS preference
+- **Zero Flash** — No white flash on page load
+- **150+ Design Tokens** — Colors, typography, spacing, shadows, and more
+- **WCAG AA Compliant** — All color combinations meet accessibility standards
+
+### Quick Start
+
+```tsx
+import { useTheme } from '@/context/ThemeContext';
+import { ThemeToggle } from '@/components/ui/Display/ThemeToggle';
+
+function MyComponent() {
+  const { mode, resolvedTheme, isDark } = useTheme();
+
+  return (
+    <div>
+      <ThemeToggle size="md" />
+      <p>Current theme: {resolvedTheme}</p>
+    </div>
+  );
+}
+```
+
+### Documentation
+
+- 📖 [Complete Theme Documentation](./THEME_SYSTEM.md)
+- 🔖 [Quick Reference Guide](./THEME_QUICK_REFERENCE.md)
+- ✅ [Milestone 04 Verification](./MILESTONE_04_VERIFICATION.md)
+
+### Testing
+
+Visit these pages to test the theme system:
+
+- **Theme Verification**: http://localhost:5173/theme-verification
+- **Design System**: http://localhost:5173/design-system
 
 ---
 
