@@ -18,6 +18,10 @@ const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'));
+const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmailPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
 const ThemeVerificationPage = lazy(() => import('@/pages/ThemeVerificationPage'));
@@ -95,10 +99,27 @@ export const router = createBrowserRouter([
                 path: 'login',
                 element: withSuspense(LoginPage),
               },
+              {
+                path: 'register',
+                element: withSuspense(RegisterPage),
+              },
+              {
+                path: 'forgot-password',
+                element: withSuspense(ForgotPasswordPage),
+              },
+              {
+                path: 'reset-password',
+                element: withSuspense(ResetPasswordPage),
+              },
+              {
+                path: 'verify-email',
+                element: withSuspense(VerifyEmailPage),
+              },
             ],
           },
         ],
       },
+
       // Design System Showcase Route
       {
         path: 'design-system',
