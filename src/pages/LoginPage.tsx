@@ -1,21 +1,41 @@
-import { useState, type FormEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { loginSchema, type LoginFormData } from '@/features/auth/schemas/authSchemas';
+import { Input, PasswordInput, Checkbox, Button, Alert, AlertDescription } from '@/components/ui';
 
 export function LoginPage() {
-  const [email, setEmail] = useState('alex.morgan@pulseboard.io');
-  const [password, setPassword] = useState('••••••••••••');
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const from = (location.state as { from?: { pathname?: string } })?.from?.pathname || '/dashboard';
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    login(email);
-    navigate(from, { replace: true });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: 'alex.morgan@pulseboard.io',
+      password: 'password123',
+      rememberMe: true,
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setAuthError(null);
+    const result = await login(data);
+    if (result.error) {
+      setAuthError(result.error);
+    } else {
+      navigate(from, { replace: true });
+    }
   };
 
   return (
@@ -27,55 +47,83 @@ export function LoginPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1">
-          <label className="text-xs font-semibold text-slate-300">Work Email</label>
-          <div className="relative">
-            <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="alex@pulseboard.io"
-              className="w-full pl-9 pr-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-            />
-          </div>
-        </div>
+      {authError && (
+        <Alert variant="danger" onClose={() => setAuthError(null)}>
+          <AlertDescription>{authError}</AlertDescription>
+        </Alert>
+      )}
 
-        <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-slate-300">Password</label>
-            <span className="text-[11px] text-indigo-400 hover:underline cursor-pointer">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        <Input
+          {...register('email')}
+          id="login-email"
+          type="email"
+          label="Work Email"
+          placeholder="alex.morgan@pulseboard.io"
+          leftAddon={<Mail className="w-4 h-4" />}
+          error={errors.email?.message}
+          disabled={isSubmitting}
+          required
+        />
+
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[11px] text-slate-400">Default demo pass: password123</span>
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
+            >
               Forgot password?
-            </span>
+            </Link>
           </div>
-          <div className="relative">
-            <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-              className="w-full pl-9 pr-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-            />
-          </div>
+          <PasswordInput
+            {...register('password')}
+            id="login-password"
+            label="Password"
+            placeholder="••••••••"
+            error={errors.password?.message}
+            disabled={isSubmitting}
+            required
+          />
         </div>
 
-        <button
+        <div className="flex items-center justify-between pt-1">
+          <Checkbox
+            {...register('rememberMe')}
+            id="remember-me"
+            label="Remember this device"
+            disabled={isSubmitting}
+          />
+        </div>
+
+        <Button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-indigo-600/25 mt-2"
+          variant="primary"
+          size="lg"
+          fullWidth
+          isLoading={isSubmitting}
+          disabled={isSubmitting}
+          rightIcon={<ArrowRight className="w-4 h-4" />}
+          className="mt-2 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400"
         >
-          <span>Sign In to Dashboard</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
+          Sign In to Dashboard
+        </Button>
       </form>
 
-      <div className="pt-2 border-t border-slate-800/80 text-center">
+      <div className="pt-4 border-t border-slate-800/80 text-center space-y-3">
+        <p className="text-xs text-slate-400">
+          Don't have an account?{' '}
+          <Link
+            to="/register"
+            className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
+          >
+            Create an account
+          </Link>
+        </p>
+
         <p className="text-[11px] text-slate-500 flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          Mock Client Auth Mode Active (No Backend Required)
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          Enterprise-grade Auth Ready (Supabase & Security Standards)
         </p>
       </div>
     </div>
