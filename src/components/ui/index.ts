@@ -6,6 +6,7 @@ export * from './Button/IconButton';
 
 // Form primitives
 export * from './Form/Input';
+export * from './Form/PasswordInput';
 export * from './Form/Textarea';
 export * from './Form/Select';
 export * from './Form/Checkbox';

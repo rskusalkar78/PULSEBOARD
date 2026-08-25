@@ -1,7 +1,9 @@
 /**
  * Context barrel — exports all context providers and hooks.
  */
-export { AuthProvider, useAuth, type User } from './AuthContext';
+export { AuthProvider, useAuth } from './AuthContext';
+export type { User } from '@/types/auth';
+
 export {
   ThemeProvider,
   useTheme,
