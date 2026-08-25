@@ -8,14 +8,10 @@ import { cn } from '@/utils/styles';
 export interface TopNavigationProps {
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
-  isMobile: boolean;
+  isMobile?: boolean;
 }
 
-export const TopNavigation: React.FC<TopNavigationProps> = ({
-  onToggleSidebar,
-  isSidebarOpen,
-  isMobile,
-}) => {
+export const TopNavigation: React.FC<TopNavigationProps> = ({ onToggleSidebar, isSidebarOpen }) => {
   const handleSearchClick = () => {
     // In a real app, this would open a search modal/command palette
     console.log('Open global search');
@@ -44,22 +40,13 @@ export const TopNavigation: React.FC<TopNavigationProps> = ({
           className="text-slate-700 dark:text-slate-300"
         />
 
-        {/* Logo - Hidden on mobile to save space */}
-        {!isMobile && (
+        {/* Logo - Only shown when sidebar is closed/collapsed to avoid duplicate brand header */}
+        {!isSidebarOpen && (
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold text-sm">
               P
             </div>
-            <span className="hidden lg:block text-lg font-semibold text-slate-900 dark:text-white">
-              PulseBoard
-            </span>
-          </div>
-        )}
-
-        {/* Mobile Logo - Only brand initial */}
-        {isMobile && (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-purple-600 text-white font-bold text-sm">
-            P
+            <span className="text-lg font-semibold text-slate-900 dark:text-white">PulseBoard</span>
           </div>
         )}
       </div>
