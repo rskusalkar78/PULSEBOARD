@@ -3,8 +3,8 @@ import { cn } from '@/utils/styles';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  helperText?: string;
-  error?: string;
+  helperText?: string | undefined;
+  error?: string | undefined;
   leftAddon?: React.ReactNode;
   rightAddon?: React.ReactNode;
   fullWidth?: boolean;
