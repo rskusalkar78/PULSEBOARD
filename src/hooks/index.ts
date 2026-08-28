@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+/**
+ * Hooks Index
+ * Central export point for all custom hooks
+ */
 
-export function useIsMounted(): boolean {
-  const [isMounted, setIsMounted] = useState(false);
+export { useAsync, useAsyncApi } from './useAsync';
+export type { UseAsyncState, UseAsyncOptions } from './useAsync';
 
-  useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
-  }, []);
+export { useLoading, useDebouncedLoading, useOptimistic } from './useLoading';
+export type { UseLoadingReturn } from './useLoading';
 
-  return isMounted;
-}
+export { useError, useFieldErrors, useRetry } from './useError';
+export type { UseErrorReturn, UseFieldErrorsReturn, UseRetryReturn, FieldError } from './useError';
 
-// Re-export theme hook for convenience — primary source is ThemeContext
-export { useTheme, type ThemeMode, type ResolvedTheme } from '@/context/ThemeContext';
+export { useToast, setGlobalToast, toast } from './useToast';
+export type { Toast, ToastType, ToastOptions, UseToastReturn } from './useToast';
