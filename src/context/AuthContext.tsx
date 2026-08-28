@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, LoginCredentials, RegisterCredentials } from '@/types/auth';
 import { authService } from '@/services/authService';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -50,7 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
-    if (isSupabaseConfigured() && supabase) {
+    // Check if Supabase is configured
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    if (supabaseUrl && supabaseKey && supabase) {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
         if (!isMounted) return;
         if (session?.user) {
