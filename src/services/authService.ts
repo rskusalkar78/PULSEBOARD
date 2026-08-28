@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import type {
   User,
   AuthSession,
@@ -22,7 +22,10 @@ const delay = (ms: number = 600) => new Promise((resolve) => setTimeout(resolve,
 
 export const authService = {
   async signIn({ email, password }: LoginCredentials): Promise<AuthResponse> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -85,7 +88,10 @@ export const authService = {
   },
 
   async signUp({ fullName, email, password }: RegisterCredentials): Promise<AuthResponse> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -135,7 +141,10 @@ export const authService = {
   },
 
   async resetPasswordForEmail(email: string): Promise<{ error: string | null }> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
@@ -147,7 +156,10 @@ export const authService = {
   },
 
   async updatePassword(password: string): Promise<{ error: string | null }> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { error } = await supabase.auth.updateUser({ password });
       return { error: error ? error.message : null };
     }
@@ -157,7 +169,10 @@ export const authService = {
   },
 
   async verifyOtp(code: string, email?: string): Promise<{ error: string | null }> {
-    if (isSupabaseConfigured() && supabase && email) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase && email) {
       const { error } = await supabase.auth.verifyOtp({
         email,
         token: code,
@@ -182,7 +197,10 @@ export const authService = {
   },
 
   async resendVerificationCode(email: string): Promise<{ error: string | null }> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
@@ -195,7 +213,10 @@ export const authService = {
   },
 
   async signOut(): Promise<{ error: string | null }> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { error } = await supabase.auth.signOut();
       return { error: error ? error.message : null };
     }
@@ -207,7 +228,10 @@ export const authService = {
   },
 
   async getInitialUser(): Promise<User | null> {
-    if (isSupabaseConfigured() && supabase) {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseKey && supabase) {
       const { data } = await supabase.auth.getSession();
       if (data.session?.user) {
         const sbUser = data.session.user;
