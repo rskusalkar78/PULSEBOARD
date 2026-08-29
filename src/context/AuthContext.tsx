@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import type { User, LoginCredentials, RegisterCredentials } from '@/types/auth';
 import { authService } from '@/services/authService';
 import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured } from '@/lib/supabaseConfig';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -50,13 +51,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let authListener: { subscription: { unsubscribe: () => void } } | null = null;
 
-    // Check if Supabase is configured
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    if (isSupabaseConfigured() && supabase) {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (!isMounted) return;
+
         if (session?.user) {
           const sbUser: User = {
             id: session.user.id,
@@ -68,9 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             createdAt: session.user.created_at,
           };
           setUser(sbUser);
-        } else {
+        } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
+
         setIsAuthLoading(false);
       });
       authListener = data;
@@ -117,7 +116,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (res.error) {
         return { error: res.error, user: null };
       }
-      // If auto session, set user; else return new user for verification screen
       if (res.session) {
         setUser(res.user);
         localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(true));
@@ -140,13 +138,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthLoading(true);
     try {
       const res = await authService.verifyOtp(code, email);
-      if (!res.error && user) {
-        setUser({
-          ...user,
-          emailConfirmedAt: new Date().toISOString(),
-        });
+      if (res.error) {
+        return res;
       }
-      return res;
+
+      const updatedUser = await authService.getInitialUser();
+      if (updatedUser) {
+        setUser(updatedUser);
+        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(true));
+      }
+
+      return { error: null };
     } finally {
       setIsAuthLoading(false);
     }
