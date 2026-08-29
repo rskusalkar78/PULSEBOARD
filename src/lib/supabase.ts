@@ -8,67 +8,51 @@
  * - Never expose service_role key in frontend code
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database.types';
-
-// =====================================================
-// ENVIRONMENT VALIDATION
-// =====================================================
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. Please check your .env file.\n' +
-      'Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY'
-  );
-}
-
-// Validate URL format
-try {
-  new URL(supabaseUrl);
-} catch {
-  throw new Error(
-    `Invalid VITE_SUPABASE_URL: "${supabaseUrl}". Must be a valid URL.`
-  );
-}
+import { isSupabaseConfigured } from './supabaseConfig';
 
 // =====================================================
 // CLIENT CONFIGURATION
 // =====================================================
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    // Enable automatic token refresh
-    autoRefreshToken: true,
-    // Persist session in localStorage
-    persistSession: true,
-    // Detect session from URL (for magic links, OAuth)
-    detectSessionInUrl: true,
-    // Storage key for session
-    storageKey: 'pulseboard-auth',
-    // Use localStorage for session storage
-    storage: window.localStorage,
-    // Flow type for OAuth
-    flowType: 'pkce',
-  },
-  db: {
-    // Use public schema by default
-    schema: 'public',
-  },
-  global: {
-    headers: {
-      'x-application-name': 'pulseboard',
-    },
-  },
-  realtime: {
-    // Realtime configuration (can be enabled per subscription)
-    params: {
-      eventsPerSecond: 10,
-    },
-  },
-});
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim() ?? '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() ?? '';
+
+export const supabase: SupabaseClient<Database> | null = isSupabaseConfigured()
+  ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        storageKey: 'pulseboard-auth',
+        storage: window.localStorage,
+        flowType: 'pkce',
+      },
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: {
+          'x-application-name': 'pulseboard',
+        },
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10,
+        },
+      },
+    })
+  : null;
+
+function requireSupabase(): SupabaseClient<Database> {
+  if (!supabase) {
+    throw new Error(
+      'Supabase is not configured. Add real VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY values to .env.'
+    );
+  }
+  return supabase;
+}
 
 // =====================================================
 // HELPER FUNCTIONS
@@ -79,10 +63,13 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
  * @returns User object or null if not authenticated
  */
 export async function getCurrentUser() {
+  const client = supabase;
+  if (!client) return null;
+
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser();
+  } = await client.auth.getUser();
 
   if (error) {
     console.error('Error getting current user:', error);
@@ -97,10 +84,13 @@ export async function getCurrentUser() {
  * @returns Session object or null if not authenticated
  */
 export async function getSession() {
+  const client = supabase;
+  if (!client) return null;
+
   const {
     data: { session },
     error,
-  } = await supabase.auth.getSession();
+  } = await client.auth.getSession();
 
   if (error) {
     console.error('Error getting session:', error);
@@ -123,7 +113,7 @@ export async function isAuthenticated(): Promise<boolean> {
  * Sign out the current user
  */
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await requireSupabase().auth.signOut();
 
   if (error) {
     console.error('Error signing out:', error);
@@ -136,14 +126,11 @@ export async function signOut() {
  * @param callback Function to call when auth state changes
  * @returns Unsubscribe function
  */
-export function onAuthStateChange(
-  callback: (event: string, session: unknown) => void
-) {
+export function onAuthStateChange(callback: (event: string, session: unknown) => void) {
   const {
     data: { subscription },
-  } = supabase.auth.onAuthStateChange(callback);
+  } = requireSupabase().auth.onAuthStateChange(callback);
 
-  // Return unsubscribe function
   return () => {
     subscription.unsubscribe();
   };
@@ -157,20 +144,19 @@ export function onAuthStateChange(
  * Get a type-safe reference to a table
  * Usage: const profiles = getTable('profiles')
  */
-export function getTable<T extends keyof Database['public']['Tables']>(
-  tableName: T
-) {
-  return supabase.from(tableName);
+export function getTable<T extends keyof Database['public']['Tables']>(tableName: T) {
+  return requireSupabase().from(tableName);
 }
 
 /**
  * Call a database function with type safety
  * Usage: const result = await callFunction('get_user_teams', { user_uuid: '...' })
  */
-export async function callFunction<
-  T extends keyof Database['public']['Functions'],
->(functionName: T, args: Database['public']['Functions'][T]['Args']) {
-  return supabase.rpc(functionName, args);
+export async function callFunction<T extends keyof Database['public']['Functions']>(
+  functionName: T,
+  args: Database['public']['Functions'][T]['Args']
+) {
+  return requireSupabase().rpc(functionName, args);
 }
 
 // =====================================================
@@ -194,8 +180,8 @@ export function isPermissionError(error: unknown): boolean {
   if (typeof error === 'object' && error !== null) {
     const err = error as { code?: string; message?: string };
     return (
-      err.code === '42501' || // Insufficient privilege
-      err.code === 'PGRST301' || // RLS policy violation
+      err.code === '42501' ||
+      err.code === 'PGRST301' ||
       err.message?.includes('permission denied') ||
       err.message?.includes('policy')
     );
@@ -222,12 +208,10 @@ export function formatSupabaseError(error: unknown): string {
     const err = error as { message: string; hint?: string };
     let message = err.message;
 
-    // Add hint if available
     if (err.hint) {
       message += ` (${err.hint})`;
     }
 
-    // Make error messages more user-friendly
     if (isAuthError(error)) {
       return 'Authentication required. Please sign in.';
     }
@@ -249,18 +233,19 @@ export function formatSupabaseError(error: unknown): string {
 // =====================================================
 
 if (import.meta.env.DEV) {
-  // Log Supabase client initialization in development
-  console.log('[Supabase] Client initialized', {
-    url: supabaseUrl,
-    anonKeyPrefix: supabaseAnonKey.substring(0, 20) + '...',
-  });
+  if (supabase) {
+    console.log('[Supabase] Client initialized', {
+      url: supabaseUrl,
+      anonKeyPrefix: supabaseAnonKey.substring(0, 20) + '...',
+    });
 
-  // Expose supabase client to window for debugging
-  if (typeof window !== 'undefined') {
-    (window as unknown as { supabase: typeof supabase }).supabase = supabase;
-    console.log('[Supabase] Client available as window.supabase');
+    if (typeof window !== 'undefined') {
+      (window as unknown as { supabase: typeof supabase }).supabase = supabase;
+      console.log('[Supabase] Client available as window.supabase');
+    }
+  } else {
+    console.info('[Supabase] No valid credentials found. Running in local demo auth mode.');
   }
 }
 
-// Export default client
 export default supabase;
