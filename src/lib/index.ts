@@ -3,6 +3,8 @@
  * Central export point for core library modules
  */
 
+export { isSupabaseConfigured } from './supabaseConfig';
+
 // Configuration
 export { config, validateConfig, isDevelopment, isProduction, isDebugEnabled } from './config';
 export type { AppConfig } from './config';

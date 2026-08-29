@@ -3,6 +3,8 @@
  * Centralized configuration management with type safety and validation
  */
 
+import { isSupabaseConfigured } from './supabaseConfig';
+
 // =====================================================
 // CONFIGURATION INTERFACE
 // =====================================================
@@ -93,8 +95,8 @@ export const config: AppConfig = {
     baseUrl: getEnvVar('VITE_API_BASE_URL', false) || 'http://localhost:3000/api',
   },
   supabase: {
-    url: getEnvVar('VITE_SUPABASE_URL'),
-    anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY'),
+    url: getEnvVar('VITE_SUPABASE_URL', false) || '',
+    anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY', false) || '',
   },
   features: {
     analytics: getEnvBool('VITE_ENABLE_ANALYTICS', true),
@@ -117,16 +119,16 @@ export const config: AppConfig = {
 export function validateConfig(): void {
   const errors: string[] = [];
 
-  // Validate Supabase URL
-  try {
-    new URL(config.supabase.url);
-  } catch {
-    errors.push(`Invalid VITE_SUPABASE_URL: "${config.supabase.url}"`);
-  }
+  if (isSupabaseConfigured()) {
+    try {
+      new URL(config.supabase.url);
+    } catch {
+      errors.push(`Invalid VITE_SUPABASE_URL: "${config.supabase.url}"`);
+    }
 
-  // Validate Supabase anon key format
-  if (config.supabase.anonKey.length < 20) {
-    errors.push('Invalid VITE_SUPABASE_ANON_KEY: key appears to be too short');
+    if (config.supabase.anonKey.length < 100) {
+      errors.push('Invalid VITE_SUPABASE_ANON_KEY: key appears to be too short');
+    }
   }
 
   // Validate environment
