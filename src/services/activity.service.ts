@@ -23,9 +23,7 @@ class ActivityService extends BaseService<
   /**
    * Get activity with relations
    */
-  async getWithRelations(
-    id: string
-  ): Promise<ApiResponse<ActivityWithRelations>> {
+  async getWithRelations(id: string): Promise<ApiResponse<ActivityWithRelations>> {
     try {
       const { data, error } = await this.table
         .select(
@@ -50,10 +48,7 @@ class ActivityService extends BaseService<
   /**
    * Get activities for a project
    */
-  async getProjectActivities(
-    projectId: string,
-    limit = 50
-  ): Promise<ApiResponse<Activity[]>> {
+  async getProjectActivities(projectId: string, limit = 50): Promise<ApiResponse<Activity[]>> {
     try {
       const { data, error } = await this.table
         .select('*, actor:profiles!actor_id(*)')
@@ -72,10 +67,7 @@ class ActivityService extends BaseService<
   /**
    * Get activities for a team
    */
-  async getTeamActivities(
-    teamId: string,
-    limit = 50
-  ): Promise<ApiResponse<Activity[]>> {
+  async getTeamActivities(teamId: string, limit = 50): Promise<ApiResponse<Activity[]>> {
     try {
       const { data, error } = await this.table
         .select('*, actor:profiles!actor_id(*)')
@@ -94,10 +86,7 @@ class ActivityService extends BaseService<
   /**
    * Get activities by a user
    */
-  async getUserActivities(
-    userId: string,
-    limit = 50
-  ): Promise<ApiResponse<Activity[]>> {
+  async getUserActivities(userId: string, limit = 50): Promise<ApiResponse<Activity[]>> {
     try {
       const { data, error } = await this.table
         .select('*, project:projects(*), team:teams(*)')
@@ -181,6 +170,7 @@ class ActivityService extends BaseService<
   /**
    * Apply filters to query
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected applyFilters(query: any, filters?: ActivityFilters) {
     if (!filters) return query;
 

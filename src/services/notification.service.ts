@@ -23,10 +23,7 @@ class NotificationService extends BaseService<
   /**
    * Get notifications for current user
    */
-  async getUserNotifications(
-    userId: string,
-    limit = 50
-  ): Promise<ApiResponse<Notification[]>> {
+  async getUserNotifications(userId: string, limit = 50): Promise<ApiResponse<Notification[]>> {
     try {
       const { data, error } = await this.table
         .select('*')
@@ -45,9 +42,7 @@ class NotificationService extends BaseService<
   /**
    * Get unread notifications
    */
-  async getUnreadNotifications(
-    userId: string
-  ): Promise<ApiResponse<Notification[]>> {
+  async getUnreadNotifications(userId: string): Promise<ApiResponse<Notification[]>> {
     try {
       const { data, error } = await this.table
         .select('*')
@@ -168,10 +163,7 @@ class NotificationService extends BaseService<
   /**
    * Delete old read notifications
    */
-  async deleteOldRead(
-    userId: string,
-    olderThanDays = 30
-  ): Promise<ApiResponse<boolean>> {
+  async deleteOldRead(userId: string, olderThanDays = 30): Promise<ApiResponse<boolean>> {
     try {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
@@ -239,6 +231,7 @@ class NotificationService extends BaseService<
   /**
    * Apply filters to query
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected applyFilters(query: any, filters?: NotificationFilters) {
     if (!filters) return query;
 

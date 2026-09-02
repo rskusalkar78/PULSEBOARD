@@ -13,12 +13,7 @@ import type {
   ApiResponse,
 } from '@/types';
 
-class TaskService extends BaseService<
-  Task,
-  TaskInsert,
-  TaskUpdate,
-  TaskFilters
-> {
+class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters> {
   protected tableName = 'tasks';
 
   /**
@@ -105,10 +100,7 @@ class TaskService extends BaseService<
   /**
    * Get tasks by status
    */
-  async getByStatus(
-    status: Task['status'],
-    projectId?: string
-  ): Promise<ApiResponse<Task[]>> {
+  async getByStatus(status: Task['status'], projectId?: string): Promise<ApiResponse<Task[]>> {
     try {
       let query = this.table.select('*').eq('status', status);
 
@@ -199,30 +191,21 @@ class TaskService extends BaseService<
   /**
    * Update task status
    */
-  async updateStatus(
-    id: string,
-    status: Task['status']
-  ): Promise<ApiResponse<Task>> {
+  async updateStatus(id: string, status: Task['status']): Promise<ApiResponse<Task>> {
     return this.update(id, { status });
   }
 
   /**
    * Assign task to user
    */
-  async assignTask(
-    id: string,
-    userId: string | null
-  ): Promise<ApiResponse<Task>> {
+  async assignTask(id: string, userId: string | null): Promise<ApiResponse<Task>> {
     return this.update(id, { assigned_to: userId });
   }
 
   /**
    * Update task position (for drag and drop)
    */
-  async updatePosition(
-    id: string,
-    position: number
-  ): Promise<ApiResponse<Task>> {
+  async updatePosition(id: string, position: number): Promise<ApiResponse<Task>> {
     return this.update(id, { position });
   }
 
@@ -317,9 +300,7 @@ class TaskService extends BaseService<
     }>
   > {
     try {
-      const { data, error } = await this.table
-        .select('status')
-        .eq('project_id', projectId);
+      const { data, error } = await this.table.select('status').eq('project_id', projectId);
 
       if (error) return this.handleError(error);
 
@@ -347,6 +328,7 @@ class TaskService extends BaseService<
   /**
    * Apply filters to query
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected applyFilters(query: any, filters?: TaskFilters) {
     if (!filters) return query;
 
@@ -383,9 +365,7 @@ class TaskService extends BaseService<
     }
 
     if (filters.search) {
-      query = query.or(
-        `title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`
-      );
+      query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
     }
 
     return query;

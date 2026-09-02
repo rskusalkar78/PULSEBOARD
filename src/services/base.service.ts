@@ -5,12 +5,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import type {
-  ApiResponse,
-  PaginatedResponse,
-  ServiceOptions,
-  ListOptions,
-} from '@/types';
+import type { ApiResponse, PaginatedResponse, ServiceOptions, ListOptions } from '@/types';
 import type { PostgrestError, PostgrestFilterBuilder } from '@supabase/supabase-js';
 
 export abstract class BaseService<
@@ -25,15 +20,16 @@ export abstract class BaseService<
    * Get table reference
    */
   protected get table() {
+    if (!supabase) {
+      throw new Error('Database operations require configured Supabase credentials.');
+    }
     return supabase.from(this.tableName);
   }
 
   /**
    * Transform error to API response format
    */
-  protected handleError<T = unknown>(
-    error: PostgrestError | Error | unknown
-  ): ApiResponse<T> {
+  protected handleError<T = unknown>(error: PostgrestError | Error | unknown): ApiResponse<T> {
     const errorObj = error as PostgrestError & Error;
 
     return {
@@ -63,9 +59,9 @@ export abstract class BaseService<
    * Apply filters to query
    */
   protected applyFilters(
-    query: PostgrestFilterBuilder<any, any, any[]>,
+    query: PostgrestFilterBuilder<unknown, unknown, unknown[]>,
     filters?: TFilters
-  ): PostgrestFilterBuilder<any, any, any[]> {
+  ): PostgrestFilterBuilder<unknown, unknown, unknown[]> {
     if (!filters) return query;
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -131,9 +127,7 @@ export abstract class BaseService<
   /**
    * Get paginated records
    */
-  async list(
-    options: ListOptions = {}
-  ): Promise<ApiResponse<PaginatedResponse<TRow>>> {
+  async list(options: ListOptions = {}): Promise<ApiResponse<PaginatedResponse<TRow>>> {
     try {
       const page = options.page || 1;
       const limit = options.limit || 10;
@@ -186,7 +180,7 @@ export abstract class BaseService<
   ): Promise<ApiResponse<TRow>> {
     try {
       const query = this.table
-        .insert(data as any)
+        .insert(data as unknown as Record<string, unknown>)
         .select(options?.select || '*')
         .single();
 
@@ -209,7 +203,7 @@ export abstract class BaseService<
   ): Promise<ApiResponse<TRow[]>> {
     try {
       const query = this.table
-        .insert(data as any[])
+        .insert(data as unknown as Record<string, unknown>[])
         .select(options?.select || '*');
 
       const { data: result, error } = await query;
@@ -232,7 +226,7 @@ export abstract class BaseService<
   ): Promise<ApiResponse<TRow>> {
     try {
       const query = this.table
-        .update(data as any)
+        .update(data as unknown as Record<string, unknown>)
         .eq('id', id)
         .select(options?.select || '*')
         .single();

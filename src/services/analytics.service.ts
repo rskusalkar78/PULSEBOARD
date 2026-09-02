@@ -161,10 +161,7 @@ class AnalyticsService extends BaseService<
   /**
    * Get events for a user
    */
-  async getUserEvents(
-    userId: string,
-    limit = 100
-  ): Promise<ApiResponse<AnalyticsEvent[]>> {
+  async getUserEvents(userId: string, limit = 100): Promise<ApiResponse<AnalyticsEvent[]>> {
     try {
       const { data, error } = await this.table
         .select('*')
@@ -205,10 +202,7 @@ class AnalyticsService extends BaseService<
   /**
    * Get events by name
    */
-  async getEventsByName(
-    eventName: string,
-    limit = 100
-  ): Promise<ApiResponse<AnalyticsEvent[]>> {
+  async getEventsByName(eventName: string, limit = 100): Promise<ApiResponse<AnalyticsEvent[]>> {
     try {
       const { data, error } = await this.table
         .select('*')
@@ -227,9 +221,7 @@ class AnalyticsService extends BaseService<
   /**
    * Get events by session
    */
-  async getSessionEvents(
-    sessionId: string
-  ): Promise<ApiResponse<AnalyticsEvent[]>> {
+  async getSessionEvents(sessionId: string): Promise<ApiResponse<AnalyticsEvent[]>> {
     try {
       const { data, error } = await this.table
         .select('*')
@@ -293,6 +285,7 @@ class AnalyticsService extends BaseService<
   /**
    * Apply filters to query
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected applyFilters(query: any, filters?: AnalyticsEventFilters) {
     if (!filters) return query;
 

@@ -4,6 +4,8 @@
  */
 
 import { BaseService } from './base.service';
+import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured } from '@/lib/supabaseConfig';
 import type {
   Profile,
   ProfileInsert,
@@ -13,12 +15,7 @@ import type {
   ProfileWithTeams,
 } from '@/types';
 
-class ProfileService extends BaseService<
-  Profile,
-  ProfileInsert,
-  ProfileUpdate,
-  ProfileFilters
-> {
+class ProfileService extends BaseService<Profile, ProfileInsert, ProfileUpdate, ProfileFilters> {
   protected tableName = 'profiles';
 
   /**
@@ -26,7 +23,12 @@ class ProfileService extends BaseService<
    */
   async getCurrentProfile(): Promise<ApiResponse<Profile>> {
     try {
-      const { data: { user } } = await this.table.auth.getUser();
+      if (!isSupabaseConfigured() || !supabase) {
+        return this.handleError(new Error('Supabase not configured'));
+      }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return this.handleError(new Error('Not authenticated'));
@@ -39,14 +41,47 @@ class ProfileService extends BaseService<
   }
 
   /**
+   * Upload user avatar
+   */
+  async uploadAvatar(userId: string, file: File): Promise<ApiResponse<string>> {
+    try {
+      if (isSupabaseConfigured() && supabase) {
+        const fileExt = file.name.split('.').pop() || 'png';
+        const filePath = `${userId}/${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, file, { upsert: true });
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+          if (urlData?.publicUrl) {
+            return this.handleSuccess(urlData.publicUrl);
+          }
+        }
+      }
+
+      // Offline / Mock fallback: Convert file to Data URL
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(this.handleSuccess(reader.result as string));
+        };
+        reader.onerror = () => {
+          resolve(this.handleError(new Error('Failed to read image file')));
+        };
+        reader.readAsDataURL(file);
+      });
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
    * Get profile by email
    */
   async getByEmail(email: string): Promise<ApiResponse<Profile>> {
     try {
-      const { data, error } = await this.table
-        .select('*')
-        .eq('email', email)
-        .single();
+      const { data, error } = await this.table.select('*').eq('email', email).single();
 
       if (error) return this.handleError(error);
 
@@ -105,11 +140,11 @@ class ProfileService extends BaseService<
   /**
    * Update current user's profile
    */
-  async updateCurrentProfile(
-    data: ProfileUpdate
-  ): Promise<ApiResponse<Profile>> {
+  async updateCurrentProfile(data: ProfileUpdate): Promise<ApiResponse<Profile>> {
     try {
-      const { data: { user } } = await this.table.auth.getUser();
+      const {
+        data: { user },
+      } = await this.table.auth.getUser();
 
       if (!user) {
         return this.handleError(new Error('Not authenticated'));
@@ -189,6 +224,7 @@ class ProfileService extends BaseService<
   /**
    * Apply filters to query
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected applyFilters(query: any, filters?: ProfileFilters) {
     if (!filters) return query;
 
@@ -201,9 +237,7 @@ class ProfileService extends BaseService<
     }
 
     if (filters.search) {
-      query = query.or(
-        `full_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`
-      );
+      query = query.or(`full_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%`);
     }
 
     return query;

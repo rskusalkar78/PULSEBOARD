@@ -14,20 +14,13 @@ import type {
   ApiResponse,
 } from '@/types';
 
-class ProjectService extends BaseService<
-  Project,
-  ProjectInsert,
-  ProjectUpdate,
-  ProjectFilters
-> {
+class ProjectService extends BaseService<Project, ProjectInsert, ProjectUpdate, ProjectFilters> {
   protected tableName = 'projects';
 
   /**
    * Get project with relations
    */
-  async getWithRelations(
-    id: string
-  ): Promise<ApiResponse<ProjectWithRelations>> {
+  async getWithRelations(id: string): Promise<ApiResponse<ProjectWithRelations>> {
     try {
       const { data, error } = await this.table
         .select(
@@ -78,10 +71,7 @@ class ProjectService extends BaseService<
   /**
    * Check if user can access project
    */
-  async canUserAccess(
-    userId: string,
-    projectId: string
-  ): Promise<ApiResponse<boolean>> {
+  async canUserAccess(userId: string, projectId: string): Promise<ApiResponse<boolean>> {
     try {
       const { data, error } = await callFunction('can_access_project', {
         user_uuid: userId,
@@ -135,9 +125,7 @@ class ProjectService extends BaseService<
   /**
    * Get accessible projects for user
    */
-  async getAccessibleProjects(
-    userId: string
-  ): Promise<ApiResponse<Project[]>> {
+  async getAccessibleProjects(userId: string): Promise<ApiResponse<Project[]>> {
     try {
       // Get projects where user is owner, or public projects, or team projects
       const { data, error } = await this.table
@@ -212,10 +200,7 @@ class ProjectService extends BaseService<
   /**
    * Get projects by status
    */
-  async getByStatus(
-    status: Project['status'],
-    userId?: string
-  ): Promise<ApiResponse<Project[]>> {
+  async getByStatus(status: Project['status'], userId?: string): Promise<ApiResponse<Project[]>> {
     try {
       let query = this.table.select('*').eq('status', status);
 
@@ -256,6 +241,7 @@ class ProjectService extends BaseService<
   /**
    * Apply filters to query
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected applyFilters(query: any, filters?: ProjectFilters) {
     if (!filters) return query;
 
@@ -276,9 +262,7 @@ class ProjectService extends BaseService<
     }
 
     if (filters.search) {
-      query = query.or(
-        `name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`
-      );
+      query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
     }
 
     return query;
