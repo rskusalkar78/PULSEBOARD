@@ -19,6 +19,7 @@ interface AuthContextType {
 
   logout: () => Promise<void>;
   toggleAuth: () => void;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -177,6 +178,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUser = (updates: Partial<User>) => {
+    setUser((prev) => (prev ? { ...prev, ...updates } : null));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -191,6 +196,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         resendVerification,
         logout,
         toggleAuth,
+        updateUser,
       }}
     >
       {children}
