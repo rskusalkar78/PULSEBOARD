@@ -1,9 +1,14 @@
+import type { UserPreferences } from './database.types';
+
 export interface User {
   id: string;
   email: string;
   name?: string | undefined;
   role?: string | undefined;
   avatarUrl?: string | undefined;
+  bio?: string | undefined;
+  timezone?: string | undefined;
+  preferences?: UserPreferences | undefined;
   emailConfirmedAt?: string | null | undefined;
   createdAt?: string | undefined;
 }

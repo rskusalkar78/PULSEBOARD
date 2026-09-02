@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured } from '@/lib/supabaseConfig';
 import type {
   User,
   AuthSession,
@@ -20,13 +21,32 @@ const DEFAULT_MOCK_USER: User = {
 
 const delay = (ms: number = 600) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function mapSupabaseUser(
+  sbUser: NonNullable<
+    Awaited<ReturnType<NonNullable<typeof supabase>['auth']['getSession']>>['data']['session']
+  >['user'],
+  fallbackEmail?: string,
+  fallbackName?: string
+): User {
+  return {
+    id: sbUser.id,
+    email: sbUser.email || fallbackEmail || '',
+    name: sbUser.user_metadata?.full_name || fallbackName || sbUser.email?.split('@')[0] || 'User',
+    role: sbUser.user_metadata?.role || 'Executive',
+    avatarUrl: sbUser.user_metadata?.avatar_url,
+    emailConfirmedAt: sbUser.email_confirmed_at ?? null,
+    createdAt: sbUser.created_at,
+  };
+}
+
+function isSupabaseAuthEnabled(): boolean {
+  return isSupabaseConfigured() && supabase !== null;
+}
+
 export const authService = {
   async signIn({ email, password }: LoginCredentials): Promise<AuthResponse> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({
+    if (isSupabaseAuthEnabled()) {
+      const { data, error } = await supabase!.auth.signInWithPassword({
         email,
         password,
       });
@@ -35,17 +55,7 @@ export const authService = {
         return { user: null, session: null, error: error.message };
       }
 
-      const user: User | null = data.user
-        ? {
-            id: data.user.id,
-            email: data.user.email || email,
-            name: data.user.user_metadata?.full_name || email.split('@')[0],
-            role: data.user.user_metadata?.role || 'Executive',
-            avatarUrl: data.user.user_metadata?.avatar_url,
-            emailConfirmedAt: data.user.email_confirmed_at ?? null,
-            createdAt: data.user.created_at,
-          }
-        : null;
+      const user: User | null = data.user ? mapSupabaseUser(data.user, email) : null;
 
       if (!user) {
         return { user: null, session: null, error: 'User data not found.' };
@@ -62,7 +72,6 @@ export const authService = {
       return { user, session, error: null };
     }
 
-    // Mock Mode fallback
     await delay();
     if (password === 'invalid-pass') {
       return { user: null, session: null, error: 'Invalid login credentials. Please try again.' };
@@ -88,11 +97,8 @@ export const authService = {
   },
 
   async signUp({ fullName, email, password }: RegisterCredentials): Promise<AuthResponse> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { data, error } = await supabase.auth.signUp({
+    if (isSupabaseAuthEnabled()) {
+      const { data, error } = await supabase!.auth.signUp({
         email,
         password,
         options: {
@@ -106,28 +112,18 @@ export const authService = {
         return { user: null, session: null, error: error.message };
       }
 
-      const user: User | null = data.user
-        ? {
-            id: data.user.id,
-            email: data.user.email || email,
-            name: fullName,
-            role: 'Member',
-            emailConfirmedAt: data.user.email_confirmed_at ?? null,
-            createdAt: data.user.created_at,
-          }
-        : null;
+      const user: User | null = data.user ? mapSupabaseUser(data.user, email, fullName) : null;
 
       return { user, session: null, error: null };
     }
 
-    // Mock Mode fallback
     await delay();
     const newUser: User = {
       id: 'usr_' + Date.now(),
       email,
       name: fullName,
       role: 'Member',
-      emailConfirmedAt: null, // Pending verification
+      emailConfirmedAt: null,
       createdAt: new Date().toISOString(),
     };
 
@@ -141,11 +137,8 @@ export const authService = {
   },
 
   async resetPasswordForEmail(email: string): Promise<{ error: string | null }> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    if (isSupabaseAuthEnabled()) {
+      const { error } = await supabase!.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       return { error: error ? error.message : null };
@@ -156,11 +149,8 @@ export const authService = {
   },
 
   async updatePassword(password: string): Promise<{ error: string | null }> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { error } = await supabase.auth.updateUser({ password });
+    if (isSupabaseAuthEnabled()) {
+      const { error } = await supabase!.auth.updateUser({ password });
       return { error: error ? error.message : null };
     }
 
@@ -169,11 +159,8 @@ export const authService = {
   },
 
   async verifyOtp(code: string, email?: string): Promise<{ error: string | null }> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase && email) {
-      const { error } = await supabase.auth.verifyOtp({
+    if (isSupabaseAuthEnabled() && email) {
+      const { error } = await supabase!.auth.verifyOtp({
         email,
         token: code,
         type: 'email',
@@ -197,11 +184,8 @@ export const authService = {
   },
 
   async resendVerificationCode(email: string): Promise<{ error: string | null }> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { error } = await supabase.auth.resend({
+    if (isSupabaseAuthEnabled()) {
+      const { error } = await supabase!.auth.resend({
         type: 'signup',
         email,
       });
@@ -213,11 +197,8 @@ export const authService = {
   },
 
   async signOut(): Promise<{ error: string | null }> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { error } = await supabase.auth.signOut();
+    if (isSupabaseAuthEnabled()) {
+      const { error } = await supabase!.auth.signOut();
       return { error: error ? error.message : null };
     }
 
@@ -228,27 +209,14 @@ export const authService = {
   },
 
   async getInitialUser(): Promise<User | null> {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseKey && supabase) {
-      const { data } = await supabase.auth.getSession();
+    if (isSupabaseAuthEnabled()) {
+      const { data } = await supabase!.auth.getSession();
       if (data.session?.user) {
-        const sbUser = data.session.user;
-        return {
-          id: sbUser.id,
-          email: sbUser.email || '',
-          name: sbUser.user_metadata?.full_name || sbUser.email?.split('@')[0],
-          role: sbUser.user_metadata?.role || 'Executive',
-          avatarUrl: sbUser.user_metadata?.avatar_url,
-          emailConfirmedAt: sbUser.email_confirmed_at ?? null,
-          createdAt: sbUser.created_at,
-        };
+        return mapSupabaseUser(data.session.user);
       }
       return null;
     }
 
-    // Mock Mode fallback
     const saved = localStorage.getItem('pulseboard_auth_state');
     const isAuthenticated = saved !== null ? JSON.parse(saved) : true;
     if (!isAuthenticated) return null;

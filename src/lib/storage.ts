@@ -21,8 +21,7 @@ export const STORAGE_BUCKETS = {
   ATTACHMENTS: 'attachments',
 } as const;
 
-export type StorageBucket =
-  (typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS];
+export type StorageBucket = (typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS];
 
 // =====================================================
 // FILE VALIDATION
@@ -67,10 +66,7 @@ export function validateFile(
   options: FileValidationOptions = {}
 ): FileValidationResult {
   const maxSize = options.maxSize || MAX_FILE_SIZE;
-  const allowedTypes = options.allowedTypes || [
-    ...ALLOWED_IMAGE_TYPES,
-    ...ALLOWED_DOCUMENT_TYPES,
-  ];
+  const allowedTypes = options.allowedTypes || [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOCUMENT_TYPES];
 
   // Check file size
   if (file.size > maxSize) {
@@ -121,13 +117,11 @@ export async function uploadFile(
     }
 
     // Upload file
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(path, file, {
-        cacheControl: options.cacheControl || '3600',
-        contentType: options.contentType || file.type,
-        upsert: options.upsert || false,
-      });
+    const { data, error } = await supabase.storage.from(bucket).upload(path, file, {
+      cacheControl: options.cacheControl || '3600',
+      contentType: options.contentType || file.type,
+      upsert: options.upsert || false,
+    });
 
     if (error) {
       console.error('Upload error:', error);
@@ -158,10 +152,7 @@ export async function uploadFile(
 /**
  * Upload avatar image
  */
-export async function uploadAvatar(
-  userId: string,
-  file: File
-): Promise<UploadResult> {
+export async function uploadAvatar(userId: string, file: File): Promise<UploadResult> {
   // Validate image
   const validation = validateFile(file, {
     maxSize: MAX_IMAGE_SIZE,
@@ -188,11 +179,8 @@ export async function uploadAvatar(
 /**
  * Upload project attachment
  */
-export async function uploadProjectFile(
-  projectId: string,
-  file: File
-): Promise<UploadResult> {
-  // Generate unique filename  
+export async function uploadProjectFile(projectId: string, file: File): Promise<UploadResult> {
+  // Generate unique filename
   const fileName = `${Date.now()}-${file.name}`;
   const filePath = `${projectId}/${fileName}`;
 
@@ -242,10 +230,7 @@ export function getPublicUrl(bucket: StorageBucket, path: string): string {
 /**
  * Download file as blob
  */
-export async function downloadFile(
-  bucket: StorageBucket,
-  path: string
-): Promise<Blob | null> {
+export async function downloadFile(bucket: StorageBucket, path: string): Promise<Blob | null> {
   try {
     const { data, error } = await supabase.storage.from(bucket).download(path);
 
@@ -268,10 +253,7 @@ export async function downloadFile(
 /**
  * Delete file from storage
  */
-export async function deleteFile(
-  bucket: StorageBucket,
-  path: string
-): Promise<boolean> {
+export async function deleteFile(bucket: StorageBucket, path: string): Promise<boolean> {
   try {
     const { error } = await supabase.storage.from(bucket).remove([path]);
 
@@ -290,10 +272,7 @@ export async function deleteFile(
 /**
  * Delete multiple files from storage
  */
-export async function deleteFiles(
-  bucket: StorageBucket,
-  paths: string[]
-): Promise<boolean> {
+export async function deleteFiles(bucket: StorageBucket, paths: string[]): Promise<boolean> {
   try {
     const { error } = await supabase.storage.from(bucket).remove(paths);
 
