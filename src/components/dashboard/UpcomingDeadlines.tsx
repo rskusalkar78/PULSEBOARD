@@ -46,6 +46,19 @@ const getDeadlineStatus = (daysUntil: number, status: Deadline['status']): strin
   return `${daysUntil} days left`;
 };
 
+const getPriorityColor = (priority: Deadline['priority']) => {
+  switch (priority) {
+    case 'urgent':
+      return 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300';
+    case 'high':
+      return 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-300';
+    case 'medium':
+      return 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/50 text-blue-700 dark:text-blue-300';
+    case 'low':
+      return 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300';
+  }
+};
+
 export const UpcomingDeadlines: React.FC<UpcomingDeadlinesProps> = ({ deadlines }) => {
   // Sort by due date
   const sortedDeadlines = [...deadlines].sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
