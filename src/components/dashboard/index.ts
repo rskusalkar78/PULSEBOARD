@@ -31,3 +31,6 @@ export type { TeamActivityChartProps } from './TeamActivityChart';
 
 export { DashboardError, DashboardEmpty } from './DashboardError';
 export type { DashboardErrorProps } from './DashboardError';
+
+// Analytics components
+export { Analytics } from '../analytics';

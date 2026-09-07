@@ -81,3 +81,86 @@ export interface DashboardData {
   projectProgress: ProjectMetrics[];
   teamActivityTrend: TeamActivity[];
 }
+
+/**
+ * Analytics types for advanced charting and trend analysis
+ */
+
+export type TimePeriod = 'week' | 'month' | 'quarter' | 'year';
+
+export interface ProductivityTrendDataPoint {
+  date: Date;
+  period: string;
+  tasksCompleted: number;
+  tasksCreated: number;
+  productivityScore: number;
+  efficiency: number; // 0-100
+}
+
+export interface ProjectCompletionDataPoint {
+  date: Date;
+  period: string;
+  projectsCompleted: number;
+  projectsStarted: number;
+  completionRate: number; // 0-100
+  averageCompletionTime: number; // days
+}
+
+export interface TaskCompletionDataPoint {
+  date: Date;
+  period: string;
+  tasksCompleted: number;
+  tasksPending: number;
+  tasksOverdue: number;
+  completionRate: number; // 0-100
+}
+
+export interface TeamActivityDataPoint {
+  date: Date;
+  period: string;
+  completedTasks: number;
+  activeUsers: number;
+  newProjects: number;
+  averageTaskTime: number; // minutes
+}
+
+export interface WeeklyMonthlyComparisonPoint {
+  week: number;
+  month: string;
+  weeklyTasks: number;
+  monthlyAverage: number;
+  weeklyProjects: number;
+  monthlyProjectAverage: number;
+}
+
+export interface KPIComparisonData {
+  label: string;
+  current: number;
+  previous: number;
+  target: number;
+  unit?: string;
+  trend: 'up' | 'down' | 'neutral';
+}
+
+export interface ChartTooltipPayload {
+  name: string;
+  value: number;
+  unit?: string;
+}
+
+export interface AnalyticsFilter {
+  period: TimePeriod;
+  startDate?: Date;
+  endDate?: Date;
+  teamMemberIds?: string[];
+  projectIds?: string[];
+}
+
+export interface AnalyticsData {
+  productivityTrends: ProductivityTrendDataPoint[];
+  projectCompletionTrends: ProjectCompletionDataPoint[];
+  taskCompletionRates: TaskCompletionDataPoint[];
+  teamActivityComparison: TeamActivityDataPoint[];
+  weeklyMonthlyComparison: WeeklyMonthlyComparisonPoint[];
+  kpiComparison: KPIComparisonData[];
+}
