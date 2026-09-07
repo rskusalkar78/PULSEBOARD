@@ -3,6 +3,9 @@
 // Layout components
 export * from './layout';
 
+// Analytics components
+export * from './analytics';
+
 // Common components
 export * from './common/ErrorBoundary';
 export * from './common/PageLoader';
