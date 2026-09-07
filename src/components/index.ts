@@ -41,3 +41,6 @@ export * from './ui/Feedback/Skeleton';
 export * from './ui/Feedback/Spinner';
 export * from './ui/Feedback/Alert';
 export * from './ui/Feedback/Toast';
+
+// Filter components
+export * from './filters';
