@@ -1,7 +1,7 @@
 import type { FilterState, DateRangePreset } from '@/types/filter';
 
 export const DEFAULT_FILTER_STATE: FilterState = {
-  search: '',
+  search: undefined,
   dateRange: undefined,
   projects: [],
   teamMembers: [],
@@ -21,7 +21,7 @@ export function parseFilterUrl(searchParams: URLSearchParams): FilterState {
   const fromParam = searchParams.get('dateFrom') || undefined;
   const toParam = searchParams.get('dateTo') || undefined;
 
-  let dateRange = undefined;
+  let dateRange: FilterState['dateRange'] = undefined;
   if (presetParam || fromParam || toParam) {
     dateRange = {
       preset: presetParam || (fromParam || toParam ? 'custom' : undefined),

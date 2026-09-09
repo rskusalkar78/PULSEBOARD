@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, Search, Check } from 'lucide-react';
 import type { FilterOption } from '@/types/filter';
-import { Dropdown } from '@/components/ui/Overlay/Dropdown';
+import { Dropdown, DropdownTrigger, DropdownContent } from '@/components/ui/Overlay/Dropdown';
 import { Button } from '@/components/ui/Button/Button';
 import { Input } from '@/components/ui/Form/Input';
 import { Checkbox } from '@/components/ui/Form/Checkbox';
@@ -26,7 +26,6 @@ export const FilterMultiSelect: React.FC<FilterMultiSelectProps> = ({
   searchable = true,
   className,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredOptions = useMemo(() => {
@@ -64,24 +63,19 @@ export const FilterMultiSelect: React.FC<FilterMultiSelectProps> = ({
         : `${label} (${activeCount})`;
 
   return (
-    <Dropdown
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      className={className}
-      trigger={
+    <Dropdown className={className}>
+      <DropdownTrigger>
         <Button
           variant={activeCount > 0 ? 'primary' : 'outline'}
           size="sm"
           leftIcon={icon}
           rightIcon={<ChevronDown className="h-3.5 w-3.5" />}
-          onClick={() => setIsOpen(!isOpen)}
           className="whitespace-nowrap"
         >
           {buttonLabel}
         </Button>
-      }
-    >
-      <div className="w-64 p-3 space-y-2">
+      </DropdownTrigger>
+      <DropdownContent className="w-64 p-3 space-y-2">
         {searchable && (
           <div className="relative">
             <Input
@@ -89,8 +83,7 @@ export const FilterMultiSelect: React.FC<FilterMultiSelectProps> = ({
               placeholder={`Search ${label.toLowerCase()}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              size="sm"
-              leftIcon={<Search className="h-3.5 w-3.5 text-slate-400" />}
+              leftAddon={<Search className="h-3.5 w-3.5 text-slate-400" />}
               className="text-xs"
             />
           </div>
@@ -130,7 +123,7 @@ export const FilterMultiSelect: React.FC<FilterMultiSelectProps> = ({
                       : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  <Checkbox checked={isChecked} onChange={() => handleToggle(opt.id)} size="sm" />
+                  <Checkbox checked={isChecked} onChange={() => handleToggle(opt.id)} />
                   {opt.avatar && <Avatar src={opt.avatar} alt={opt.label} size="xs" />}
                   {opt.color && (
                     <span
@@ -153,7 +146,7 @@ export const FilterMultiSelect: React.FC<FilterMultiSelectProps> = ({
             })
           )}
         </div>
-      </div>
+      </DropdownContent>
     </Dropdown>
   );
 };

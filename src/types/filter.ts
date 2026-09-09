@@ -18,8 +18,8 @@ export interface FilterOption {
 }
 
 export interface FilterState {
-  search?: string;
-  dateRange?: DateRangeFilter;
+  search?: string | undefined;
+  dateRange?: DateRangeFilter | undefined;
   projects: string[];
   teamMembers: string[];
   statuses: string[];
