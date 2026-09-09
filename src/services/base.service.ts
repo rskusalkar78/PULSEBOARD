@@ -6,7 +6,7 @@
 
 import { supabase } from '@/lib/supabase';
 import type { ApiResponse, PaginatedResponse, ServiceOptions, ListOptions } from '@/types';
-import type { PostgrestError, PostgrestFilterBuilder } from '@supabase/supabase-js';
+import type { PostgrestError } from '@supabase/supabase-js';
 
 export abstract class BaseService<
   TRow,
@@ -30,14 +30,14 @@ export abstract class BaseService<
    * Transform error to API response format
    */
   protected handleError<T = unknown>(error: PostgrestError | Error | unknown): ApiResponse<T> {
-    const errorObj = error as PostgrestError & Error;
+    const errorObj = (error || {}) as Record<string, unknown>;
 
     return {
       data: null,
       error: {
-        message: errorObj.message || 'An unexpected error occurred',
-        code: errorObj.code,
-        status: errorObj.status,
+        message: (errorObj.message as string) || 'An unexpected error occurred',
+        code: errorObj.code as string | undefined,
+        status: (errorObj.status as number) ?? undefined,
         details: errorObj.details ? { details: errorObj.details } : undefined,
       },
       success: false,
@@ -58,10 +58,8 @@ export abstract class BaseService<
   /**
    * Apply filters to query
    */
-  protected applyFilters(
-    query: PostgrestFilterBuilder<unknown, unknown, unknown[]>,
-    filters?: TFilters
-  ): PostgrestFilterBuilder<unknown, unknown, unknown[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  protected applyFilters(query: any, filters?: TFilters): any {
     if (!filters) return query;
 
     Object.entries(filters).forEach(([key, value]) => {
@@ -179,8 +177,8 @@ export abstract class BaseService<
     options?: { select?: string } & ServiceOptions
   ): Promise<ApiResponse<TRow>> {
     try {
-      const query = this.table
-        .insert(data as unknown as Record<string, unknown>)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const query = (this.table.insert as any)(data)
         .select(options?.select || '*')
         .single();
 
@@ -202,9 +200,8 @@ export abstract class BaseService<
     options?: { select?: string } & ServiceOptions
   ): Promise<ApiResponse<TRow[]>> {
     try {
-      const query = this.table
-        .insert(data as unknown as Record<string, unknown>[])
-        .select(options?.select || '*');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const query = (this.table.insert as any)(data).select(options?.select || '*');
 
       const { data: result, error } = await query;
 
@@ -225,8 +222,8 @@ export abstract class BaseService<
     options?: { select?: string } & ServiceOptions
   ): Promise<ApiResponse<TRow>> {
     try {
-      const query = this.table
-        .update(data as unknown as Record<string, unknown>)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const query = (this.table.update as any)(data)
         .eq('id', id)
         .select(options?.select || '*')
         .single();

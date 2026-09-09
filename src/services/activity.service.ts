@@ -162,16 +162,15 @@ class ActivityService extends BaseService<
       entity_type: entityType,
       entity_id: entityId,
       metadata: metadata || {},
-      project_id: projectId,
-      team_id: teamId,
+      project_id: projectId || null,
+      team_id: teamId || null,
     });
   }
-
   /**
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: ActivityFilters) {
+  protected override applyFilters(query: any, filters?: ActivityFilters) {
     if (!filters) return query;
 
     if (filters.actor_id) {
@@ -202,7 +201,7 @@ class ActivityService extends BaseService<
   }
 
   // Override update to prevent modifications (activities are immutable)
-  async update(): Promise<ApiResponse<Activity>> {
+  override async update(): Promise<ApiResponse<Activity>> {
     return this.handleError(new Error('Activities cannot be updated'));
   }
 }

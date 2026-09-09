@@ -53,13 +53,13 @@ class AnalyticsService extends BaseService<
       const userAgent = navigator.userAgent;
 
       return this.create({
-        user_id: userId,
+        user_id: userId || null,
         event_name: eventName,
         event_category: eventCategory,
         properties: properties || {},
-        session_id: sessionId,
+        session_id: sessionId || null,
         user_agent: userAgent,
-        ip_address: null, // Will be set on server if needed
+        ip_address: null,
       });
     } catch (error) {
       // Don't throw errors for analytics
@@ -286,7 +286,7 @@ class AnalyticsService extends BaseService<
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: AnalyticsEventFilters) {
+  protected override applyFilters(query: any, filters?: AnalyticsEventFilters) {
     if (!filters) return query;
 
     if (filters.user_id) {
@@ -317,7 +317,7 @@ class AnalyticsService extends BaseService<
   }
 
   // Override update to prevent modifications (analytics events are immutable)
-  async update(): Promise<ApiResponse<AnalyticsEvent>> {
+  override async update(): Promise<ApiResponse<AnalyticsEvent>> {
     return this.handleError(new Error('Analytics events cannot be updated'));
   }
 }

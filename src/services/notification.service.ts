@@ -95,8 +95,8 @@ class NotificationService extends BaseService<
    */
   async markAllAsRead(userId: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await this.table
-        .update({ read: true })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (this.table.update as any)({ read: true })
         .eq('user_id', userId)
         .eq('read', false);
 
@@ -125,10 +125,10 @@ class NotificationService extends BaseService<
       user_id: userId,
       type,
       title,
-      message,
-      action_url: actionUrl,
-      entity_type: entityType,
-      entity_id: entityId,
+      message: message || null,
+      action_url: actionUrl || null,
+      entity_type: entityType || null,
+      entity_id: entityId || null,
       metadata: metadata || {},
     });
   }
@@ -150,14 +150,15 @@ class NotificationService extends BaseService<
       user_id: userId,
       type,
       title,
-      message,
-      action_url: actionUrl,
-      entity_type: entityType,
-      entity_id: entityId,
+      message: message || null,
+      action_url: actionUrl || null,
+      entity_type: entityType || null,
+      entity_id: entityId || null,
       metadata: metadata || {},
     }));
 
-    return this.createMany(notifications);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.createMany(notifications as any);
   }
 
   /**
@@ -232,7 +233,7 @@ class NotificationService extends BaseService<
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: NotificationFilters) {
+  protected override applyFilters(query: any, filters?: NotificationFilters) {
     if (!filters) return query;
 
     if (filters.user_id) {
