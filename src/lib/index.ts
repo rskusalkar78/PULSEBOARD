@@ -81,4 +81,6 @@ export type {
   UploadResult,
 } from './storage';
 
+import { supabase } from './supabase';
+
 export { supabase as default };

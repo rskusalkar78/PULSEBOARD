@@ -1,8 +1,12 @@
 import { useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { FilterState } from '@/types/filter';
-import { DEFAULT_FILTER_STATE } from '@/types/filter';
-import { parseFilterUrl, serializeFilterUrl, countActiveFilters } from '@/utils/filterUrl';
+import {
+  parseFilterUrl,
+  serializeFilterUrl,
+  countActiveFilters,
+  DEFAULT_FILTER_STATE,
+} from '@/utils/filterUrl';
 
 export interface UseUrlFiltersOptions {
   defaultFilters?: Partial<FilterState>;
