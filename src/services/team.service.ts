@@ -4,6 +4,7 @@
  */
 
 import { BaseService } from './base.service';
+import { supabase } from '@/lib/supabase';
 import type {
   Team,
   TeamInsert,
@@ -88,7 +89,8 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
    */
   async isTeamMember(teamId: string, userId: string): Promise<ApiResponse<boolean>> {
     try {
-      const { count, error } = await this.table.db
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
+      const { count, error } = await supabase
         .from('team_members')
         .select('*', { count: 'exact', head: true })
         .eq('team_id', teamId)
@@ -107,9 +109,9 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
    */
   async addMember(data: TeamMemberInsert): Promise<ApiResponse<TeamMember>> {
     try {
-      const { data: result, error } = await this.table.db
-        .from('team_members')
-        .insert(data as unknown as Record<string, unknown>)
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: result, error } = await (supabase.from('team_members').insert as any)(data)
         .select('*')
         .single();
 
@@ -126,9 +128,9 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
    */
   async updateMember(memberId: string, data: TeamMemberUpdate): Promise<ApiResponse<TeamMember>> {
     try {
-      const { data: result, error } = await this.table.db
-        .from('team_members')
-        .update(data as unknown as Record<string, unknown>)
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: result, error } = await (supabase.from('team_members').update as any)(data)
         .eq('id', memberId)
         .select('*')
         .single();
@@ -146,7 +148,8 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
    */
   async removeMember(memberId: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await this.table.db.from('team_members').delete().eq('id', memberId);
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
+      const { error } = await supabase.from('team_members').delete().eq('id', memberId);
 
       if (error) return this.handleError(error);
 
@@ -161,7 +164,8 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
    */
   async getMembers(teamId: string): Promise<ApiResponse<TeamMember[]>> {
     try {
-      const { data, error } = await this.table.db
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
+      const { data, error } = await supabase
         .from('team_members')
         .select(
           `
@@ -216,10 +220,12 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
         return teamResult;
       }
 
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
       // Update new owner's role to owner
-      const { error: memberError } = await this.table.db
-        .from('team_members')
-        .update({ role: 'owner' })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: memberError } = await (supabase.from('team_members').update as any)({
+        role: 'owner',
+      })
         .eq('team_id', teamId)
         .eq('user_id', newOwnerId);
 
@@ -235,7 +241,7 @@ class TeamService extends BaseService<Team, TeamInsert, TeamUpdate, TeamFilters>
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: TeamFilters) {
+  protected override applyFilters(query: any, filters?: TeamFilters) {
     if (!filters) return query;
 
     if (filters.owner_id) {
