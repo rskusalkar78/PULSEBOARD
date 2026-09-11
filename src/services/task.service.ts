@@ -219,7 +219,8 @@ class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters>
     try {
       // Update positions for all tasks
       const updates = taskOrders.map(({ id, position }) =>
-        this.table.update({ position }).eq('id', id).eq('project_id', projectId)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (this.table.update as any)({ position }).eq('id', id).eq('project_id', projectId)
       );
 
       await Promise.all(updates);
@@ -305,7 +306,7 @@ class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters>
       if (error) return this.handleError(error);
 
       const stats = {
-        total: data.length,
+        total: (data || []).length,
         todo: 0,
         in_progress: 0,
         in_review: 0,
@@ -313,7 +314,7 @@ class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters>
         cancelled: 0,
       };
 
-      data.forEach((task) => {
+      data.forEach((task: Task) => {
         if (task.status in stats) {
           stats[task.status as keyof typeof stats]++;
         }
@@ -329,7 +330,7 @@ class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters>
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: TaskFilters) {
+  protected override applyFilters(query: any, filters?: TaskFilters) {
     if (!filters) return query;
 
     if (filters.project_id) {

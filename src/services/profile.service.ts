@@ -142,9 +142,10 @@ class ProfileService extends BaseService<Profile, ProfileInsert, ProfileUpdate, 
    */
   async updateCurrentProfile(data: ProfileUpdate): Promise<ApiResponse<Profile>> {
     try {
+      if (!supabase) return this.handleError(new Error('Supabase not configured'));
       const {
         data: { user },
-      } = await this.table.auth.getUser();
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return this.handleError(new Error('Not authenticated'));
@@ -187,9 +188,10 @@ class ProfileService extends BaseService<Profile, ProfileInsert, ProfileUpdate, 
    */
   async updateLastSeen(id: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await this.table
-        .update({ last_seen_at: new Date().toISOString() })
-        .eq('id', id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (this.table.update as any)({
+        last_seen_at: new Date().toISOString(),
+      }).eq('id', id);
 
       if (error) return this.handleError(error);
 
@@ -225,7 +227,7 @@ class ProfileService extends BaseService<Profile, ProfileInsert, ProfileUpdate, 
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: ProfileFilters) {
+  protected override applyFilters(query: any, filters?: ProfileFilters) {
     if (!filters) return query;
 
     if (filters.role) {

@@ -242,7 +242,7 @@ class ProjectService extends BaseService<Project, ProjectInsert, ProjectUpdate, 
    * Apply filters to query
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected applyFilters(query: any, filters?: ProjectFilters) {
+  protected override applyFilters(query: any, filters?: ProjectFilters) {
     if (!filters) return query;
 
     if (filters.owner_id) {
