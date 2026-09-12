@@ -52,8 +52,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               placeholder={placeholder}
               value={filters.search || ''}
               onChange={(e) => onSetFilter('search', e.target.value || undefined)}
-              leftIcon={<Search className="h-4 w-4 text-slate-400" />}
-              size="md"
+              leftAddon={<Search className="h-4 w-4 text-slate-400" />}
             />
           </div>
         )}
