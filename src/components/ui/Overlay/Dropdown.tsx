@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext, useContext } from 'react';
+import React, { useState, useRef, useEffect, createContext, useContext, useCallback } from 'react';
 import { cn } from '@/utils/styles';
 
 interface DropdownContextValue {
@@ -9,19 +9,40 @@ interface DropdownContextValue {
 
 const DropdownContext = createContext<DropdownContextValue | null>(null);
 
-export interface DropdownProps {
-  children: React.ReactNode;
-  className?: string;
+export interface DropdownItemConfig {
+  id: string;
+  label: React.ReactNode;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  danger?: boolean;
 }
 
-export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
+export interface DropdownProps {
+  children?: React.ReactNode;
+  className?: string;
+  /** Shorthand: render a trigger button + items list without compound components */
+  trigger?: React.ReactNode;
+  items?: DropdownItemConfig[];
+  align?: 'left' | 'right';
+}
+
+export const Dropdown: React.FC<DropdownProps> = ({
+  children,
+  className,
+  trigger,
+  items,
+  align = 'right',
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const close = () => setIsOpen(false);
-  const toggle = () => setIsOpen((prev) => !prev);
+  const close = useCallback(() => setIsOpen(false), []);
+  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
@@ -29,15 +50,13 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === 'Escape') {
         setIsOpen(false);
       }
     };
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -48,10 +67,82 @@ export const Dropdown: React.FC<DropdownProps> = ({ children, className }) => {
   return (
     <DropdownContext.Provider value={{ isOpen, close, toggle }}>
       <div ref={dropdownRef} className={cn('relative inline-block text-left', className)}>
-        {children}
+        {children ? (
+          children
+        ) : (
+          <>
+            {/*
+             * Shorthand API: <Dropdown trigger={<button>} items={[...]} />
+             * We render the trigger element cloned with onClick/aria props injected
+             * directly onto the element itself — avoiding an extra wrapper div that
+             * would create a double-click handler problem when the trigger is already
+             * a button with its own onClick.
+             */}
+            {trigger && (
+              <ShorthandTrigger toggle={toggle} isOpen={isOpen}>
+                {trigger}
+              </ShorthandTrigger>
+            )}
+            {items && (
+              <DropdownContent align={align}>
+                {items.map((item) => (
+                  <DropdownItem
+                    key={item.id}
+                    icon={item.icon}
+                    danger={item.danger}
+                    disabled={item.disabled}
+                    onClick={item.onClick}
+                  >
+                    {item.label}
+                  </DropdownItem>
+                ))}
+              </DropdownContent>
+            )}
+          </>
+        )}
       </div>
     </DropdownContext.Provider>
   );
+};
+
+/**
+ * Internal helper that clones the trigger element and injects toggle/aria props.
+ * This avoids wrapping a <button> inside a <div role="button">, which would
+ * create accessibility violations and double event firing.
+ */
+const ShorthandTrigger: React.FC<{
+  children: React.ReactNode;
+  toggle: () => void;
+  isOpen: boolean;
+}> = ({ children, toggle, isOpen }) => {
+  const child = React.Children.only(children) as React.ReactElement<
+    React.HTMLAttributes<HTMLElement> & { 'aria-expanded'?: boolean; 'aria-haspopup'?: boolean }
+  >;
+
+  return React.cloneElement(child, {
+    onClick: (e: React.MouseEvent) => {
+      e.stopPropagation();
+      // Preserve original onClick if present
+      if (child.props.onClick) {
+        (child.props.onClick as React.MouseEventHandler)(e as React.MouseEvent<HTMLElement>);
+      }
+      toggle();
+    },
+    'aria-expanded': isOpen,
+    'aria-haspopup': true,
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+      // Preserve original onKeyDown if present
+      if (child.props.onKeyDown) {
+        (child.props.onKeyDown as React.KeyboardEventHandler)(
+          e as React.KeyboardEvent<HTMLElement>
+        );
+      }
+    },
+  });
 };
 
 export const DropdownTrigger: React.FC<{ children: React.ReactNode; className?: string }> = ({
@@ -101,7 +192,10 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
     <div
       role="menu"
       className={cn(
-        'absolute z-[1500] mt-2 w-56 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 shadow-lg focus:outline-none animate-in fade-in-80 zoom-in-95',
+        // Use absolute positioning within the relative parent, z-index high enough
+        // to escape any stacking context but not relying on overflow-visible on ancestors.
+        // The parent <Dropdown> div is position:relative so this anchors correctly.
+        'absolute z-[1500] mt-2 w-56 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 shadow-lg shadow-black/20 focus:outline-none',
         align === 'right' ? 'right-0' : 'left-0',
         className
       )}
@@ -136,6 +230,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   return (
     <button
       role="menuitem"
+      type="button"
       disabled={disabled}
       onClick={handleClick}
       className={cn(
@@ -148,7 +243,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
       )}
       {...props}
     >
-      {icon && <span className="h-4 w-4 shrink-0">{icon}</span>}
+      {icon && <span className="h-4 w-4 shrink-0 flex items-center justify-center">{icon}</span>}
       <span className="truncate">{children}</span>
     </button>
   );
