@@ -1,6 +1,7 @@
 import React from 'react';
-import { Briefcase, Users } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Display/Card';
+import { useNavigate } from 'react-router-dom';
+import { Briefcase, Users, MoreVertical, ExternalLink } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, Dropdown } from '@/components';
 import { Progress } from '@/components/ui/Display/Progress';
 import { Badge } from '@/components/ui/Display/Badge';
 import type { ProjectMetrics } from '@/types/dashboard';
@@ -45,6 +46,7 @@ const getProgressVariant = (completion: number) => {
 };
 
 export const ProjectProgress: React.FC<ProjectProgressProps> = ({ projects, maxProjects = 5 }) => {
+  const navigate = useNavigate();
   const displayProjects = projects.slice(0, maxProjects);
   const totalCompletion =
     projects.length > 0
@@ -53,15 +55,36 @@ export const ProjectProgress: React.FC<ProjectProgressProps> = ({ projects, maxP
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800">
-      <CardHeader>
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Briefcase className="h-5 w-5 text-violet-600 dark:text-violet-400" />
             Project Progress
           </CardTitle>
-          <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-            Avg: {totalCompletion}%
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+              Avg: {totalCompletion}%
+            </span>
+            <Dropdown
+              trigger={
+                <button
+                  type="button"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  aria-label="More options"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </button>
+              }
+              items={[
+                {
+                  id: 'projects-page',
+                  label: 'Manage Projects',
+                  icon: <ExternalLink className="h-4 w-4 text-violet-500" />,
+                  onClick: () => navigate('/projects'),
+                },
+              ]}
+            />
+          </div>
         </div>
       </CardHeader>
       <CardContent>

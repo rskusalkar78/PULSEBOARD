@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FileText,
   CheckCircle2,
@@ -6,8 +7,10 @@ import {
   RefreshCw,
   UserPlus,
   FolderPlus,
+  MoreVertical,
+  Filter,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Display/Card';
+import { Card, CardContent, CardHeader, CardTitle, Dropdown } from '@/components';
 import { Avatar } from '@/components/ui/Display/Avatar';
 import { Badge } from '@/components/ui/Display/Badge';
 import type { ActivityLog } from '@/types/dashboard';
@@ -91,13 +94,47 @@ const formatTimeAgo = (date: Date): string => {
 };
 
 export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
+  const navigate = useNavigate();
+
   return (
     <Card className="border border-slate-200 dark:border-slate-800">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="flex items-center gap-2">
           <FileText className="h-5 w-5 text-violet-600 dark:text-violet-400" />
           Recent Activity
         </CardTitle>
+
+        <Dropdown
+          trigger={
+            <button
+              type="button"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="More activity options"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          }
+          items={[
+            {
+              id: 'view-projects',
+              label: 'View Project Activity',
+              icon: <FolderPlus className="h-4 w-4 text-violet-500" />,
+              onClick: () => navigate('/projects'),
+            },
+            {
+              id: 'view-team',
+              label: 'View Team Activity',
+              icon: <UserPlus className="h-4 w-4 text-pink-500" />,
+              onClick: () => navigate('/team'),
+            },
+            {
+              id: 'filter-logs',
+              label: 'Filter Activity Logs',
+              icon: <Filter className="h-4 w-4 text-slate-500" />,
+              onClick: () => navigate('/analytics'),
+            },
+          ]}
+        />
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
