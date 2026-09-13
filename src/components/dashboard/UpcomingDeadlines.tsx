@@ -1,6 +1,7 @@
 import React from 'react';
-import { Calendar, AlertCircle, Clock } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Display/Card';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, AlertCircle, Clock, MoreVertical, FolderKanban } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, Dropdown } from '@/components';
 import { Avatar } from '@/components/ui/Display/Avatar';
 import { Badge } from '@/components/ui/Display/Badge';
 import type { Deadline } from '@/types/dashboard';
@@ -60,16 +61,43 @@ const getPriorityColor = (priority: Deadline['priority']) => {
 };
 
 export const UpcomingDeadlines: React.FC<UpcomingDeadlinesProps> = ({ deadlines }) => {
+  const navigate = useNavigate();
   // Sort by due date
   const sortedDeadlines = [...deadlines].sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 
   return (
     <Card className="border border-slate-200 dark:border-slate-800">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-violet-600 dark:text-violet-400" />
           Upcoming Deadlines
         </CardTitle>
+
+        <Dropdown
+          trigger={
+            <button
+              type="button"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="More deadline options"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          }
+          items={[
+            {
+              id: 'all-projects',
+              label: 'View Project Deadlines',
+              icon: <FolderKanban className="h-4 w-4 text-violet-500" />,
+              onClick: () => navigate('/projects'),
+            },
+            {
+              id: 'filter-overdue',
+              label: 'View Overdue Tasks',
+              icon: <AlertCircle className="h-4 w-4 text-rose-500" />,
+              onClick: () => navigate('/projects'),
+            },
+          ]}
+        />
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
