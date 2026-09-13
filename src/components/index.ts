@@ -44,3 +44,6 @@ export * from './ui/Feedback/Toast';
 
 // Filter components
 export * from './filters';
+
+// Project components
+export * from './projects';

@@ -14,6 +14,8 @@ export type TeamMemberRole = 'owner' | 'admin' | 'member' | 'viewer';
 
 export type ProjectStatus = 'active' | 'archived' | 'completed' | 'on_hold';
 
+export type ProjectPriority = 'low' | 'medium' | 'high' | 'urgent';
+
 export type ProjectVisibility = 'private' | 'team' | 'public';
 
 export type TaskStatus = 'todo' | 'in_progress' | 'in_review' | 'completed' | 'cancelled';
@@ -295,6 +297,13 @@ export interface ProjectWithRelations extends Project {
   };
 }
 
+export interface ProjectWithDetails extends ProjectWithRelations {
+  priority?: ProjectPriority;
+  progress?: number;
+  task_count?: number;
+  completed_task_count?: number;
+}
+
 export interface TaskWithRelations extends Task {
   project?: Project;
   created_by_profile?: Profile;
@@ -332,6 +341,7 @@ export interface ProjectFilters {
   owner_id?: string;
   team_id?: string;
   status?: ProjectStatus;
+  priority?: ProjectPriority;
   visibility?: ProjectVisibility;
   search?: string;
 }
