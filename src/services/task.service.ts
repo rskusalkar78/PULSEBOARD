@@ -270,14 +270,96 @@ class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters>
   }
 
   /**
-   * Search tasks
+   * Search tasks with pagination
    */
-  async search(query: string, limit = 10): Promise<ApiResponse<Task[]>> {
+  async search(
+    query: string,
+    options?: { limit?: number; page?: number; projectId?: string }
+  ): Promise<ApiResponse<Task[]>> {
     try {
-      const { data, error } = await this.table
+      let searchQuery = this.table
         .select('*, project:projects(*)')
-        .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-        .limit(limit);
+        .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
+
+      if (options?.projectId) {
+        searchQuery = searchQuery.eq('project_id', options.projectId);
+      }
+
+      const limit = options?.limit || 20;
+      const page = options?.page || 1;
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+
+      const { data, error } = await searchQuery.range(from, to);
+
+      if (error) return this.handleError(error);
+
+      return this.handleSuccess(data as Task[]);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Advanced search with filters and sorting
+   */
+  async advancedSearch(options: {
+    query?: string;
+    projectId?: string;
+    status?: Task['status'];
+    priority?: Task['priority'];
+    assignedTo?: string;
+    createdBy?: string;
+    dueDateFrom?: string;
+    dueDateTo?: string;
+    tags?: string[];
+    sortBy?: 'title' | 'priority' | 'due_date' | 'created_at' | 'updated_at' | 'status';
+    sortOrder?: 'asc' | 'desc';
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<Task[]>> {
+    try {
+      let searchQuery = this.table.select(
+        '*, project:projects(*), assigned_to_profile:profiles!assigned_to(*)'
+      );
+
+      // Apply text search
+      if (options.query) {
+        searchQuery = searchQuery.or(
+          `title.ilike.%${options.query}%,description.ilike.%${options.query}%`
+        );
+      }
+
+      // Apply filters
+      if (options.projectId) searchQuery = searchQuery.eq('project_id', options.projectId);
+      if (options.status) searchQuery = searchQuery.eq('status', options.status);
+      if (options.priority) searchQuery = searchQuery.eq('priority', options.priority);
+      if (options.assignedTo) searchQuery = searchQuery.eq('assigned_to', options.assignedTo);
+      if (options.createdBy) searchQuery = searchQuery.eq('created_by', options.createdBy);
+      if (options.tags && options.tags.length > 0) {
+        searchQuery = searchQuery.contains('tags', options.tags);
+      }
+
+      // Apply date range
+      if (options.dueDateFrom) {
+        searchQuery = searchQuery.gte('due_date', options.dueDateFrom);
+      }
+      if (options.dueDateTo) {
+        searchQuery = searchQuery.lte('due_date', options.dueDateTo);
+      }
+
+      // Apply sorting
+      const sortBy = options.sortBy || 'created_at';
+      const sortOrder = options.sortOrder === 'asc';
+      searchQuery = searchQuery.order(sortBy, { ascending: sortOrder });
+
+      // Apply pagination
+      const limit = options.limit || 20;
+      const page = options.page || 1;
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+
+      const { data, error } = await searchQuery.range(from, to);
 
       if (error) return this.handleError(error);
 
@@ -321,6 +403,129 @@ class TaskService extends BaseService<Task, TaskInsert, TaskUpdate, TaskFilters>
       });
 
       return this.handleSuccess(stats);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get tasks due today
+   */
+  async getDueToday(userId?: string): Promise<ApiResponse<Task[]>> {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      let query = this.table
+        .select('*, project:projects(*), assigned_to_profile:profiles!assigned_to(*)')
+        .gte('due_date', today.toISOString())
+        .lt('due_date', tomorrow.toISOString())
+        .neq('status', 'completed')
+        .neq('status', 'cancelled');
+
+      if (userId) {
+        query = query.eq('assigned_to', userId);
+      }
+
+      const { data, error } = await query.order('due_date', { ascending: true });
+
+      if (error) return this.handleError(error);
+
+      return this.handleSuccess(data as Task[]);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get tasks due this week
+   */
+  async getDueThisWeek(userId?: string): Promise<ApiResponse<Task[]>> {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const endOfWeek = new Date(today);
+      endOfWeek.setDate(endOfWeek.getDate() + (7 - endOfWeek.getDay())); // End of Sunday
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      let query = this.table
+        .select('*, project:projects(*), assigned_to_profile:profiles!assigned_to(*)')
+        .gte('due_date', today.toISOString())
+        .lte('due_date', endOfWeek.toISOString())
+        .neq('status', 'completed')
+        .neq('status', 'cancelled');
+
+      if (userId) {
+        query = query.eq('assigned_to', userId);
+      }
+
+      const { data, error } = await query.order('due_date', { ascending: true });
+
+      if (error) return this.handleError(error);
+
+      return this.handleSuccess(data as Task[]);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get user's task summary
+   */
+  async getUserTaskSummary(userId: string): Promise<
+    ApiResponse<{
+      total: number;
+      assigned: number;
+      overdue: number;
+      dueToday: number;
+      dueThisWeek: number;
+      completed: number;
+    }>
+  > {
+    try {
+      const { data, error } = await this.table.select('status, due_date').eq('assigned_to', userId);
+
+      if (error) return this.handleError(error);
+
+      const now = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endOfWeek = new Date(today);
+      endOfWeek.setDate(endOfWeek.getDate() + (7 - endOfWeek.getDay()));
+
+      const summary = {
+        total: (data || []).length,
+        assigned: 0,
+        overdue: 0,
+        dueToday: 0,
+        dueThisWeek: 0,
+        completed: 0,
+      };
+
+      data.forEach((task: Task) => {
+        if (task.status === 'completed') {
+          summary.completed++;
+        } else {
+          summary.assigned++;
+          if (task.due_date) {
+            const dueDate = new Date(task.due_date);
+            if (dueDate < now) {
+              summary.overdue++;
+            }
+            if (dueDate.toDateString() === today.toDateString()) {
+              summary.dueToday++;
+            }
+            if (dueDate <= endOfWeek) {
+              summary.dueThisWeek++;
+            }
+          }
+        }
+      });
+
+      return this.handleSuccess(summary);
     } catch (error) {
       return this.handleError(error);
     }
