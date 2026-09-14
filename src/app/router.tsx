@@ -17,6 +17,9 @@ const TeamPage = lazy(() => import('@/pages/TeamPage'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
 const NotificationsPage = lazy(() => import('@/pages/NotificationsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
+const TasksPage = lazy(() => import('@/pages/TasksPage'));
+const TaskFormPage = lazy(() => import('@/pages/TaskFormPage'));
+const TaskDetailPage = lazy(() => import('@/pages/TaskDetailPage'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
@@ -69,6 +72,22 @@ export const router = createBrowserRouter([
               {
                 path: 'team',
                 element: withSuspense(TeamPage),
+              },
+              {
+                path: 'tasks',
+                element: withSuspense(TasksPage),
+              },
+              {
+                path: 'tasks/create',
+                element: withSuspense(TaskFormPage),
+              },
+              {
+                path: 'tasks/:id',
+                element: withSuspense(TaskDetailPage),
+              },
+              {
+                path: 'tasks/:id/edit',
+                element: withSuspense(TaskFormPage),
               },
               {
                 path: 'settings',
