@@ -11,6 +11,8 @@ import type {
   ProjectUpdate,
   ProjectFilters,
   ProjectWithRelations,
+  ProjectWithDetails,
+  ProjectPriority,
   ApiResponse,
 } from '@/types';
 
@@ -36,6 +38,51 @@ class ProjectService extends BaseService<Project, ProjectInsert, ProjectUpdate, 
       if (error) return this.handleError(error);
 
       return this.handleSuccess(data as ProjectWithRelations);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get all projects with owner profiles and details
+   */
+  async getProjectsWithDetails(
+    filters?: ProjectFilters
+  ): Promise<ApiResponse<ProjectWithDetails[]>> {
+    try {
+      let query = this.table
+        .select(
+          `
+          *,
+          owner:profiles!owner_id(*),
+          team:teams(*)
+        `
+        )
+        .order('created_at', { ascending: false });
+
+      query = this.applyFilters(query, filters);
+
+      const { data, error } = await query;
+
+      if (error) return this.handleError(error);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projectsWithDetails: ProjectWithDetails[] = (data || []).map((project: any) => {
+        const priority = (project.metadata?.priority as ProjectPriority) || 'medium';
+        const progress =
+          typeof project.metadata?.progress === 'number'
+            ? project.metadata.progress
+            : project.status === 'completed'
+              ? 100
+              : 0;
+        return {
+          ...project,
+          priority,
+          progress,
+        };
+      });
+
+      return this.handleSuccess(projectsWithDetails);
     } catch (error) {
       return this.handleError(error);
     }
