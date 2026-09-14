@@ -22,8 +22,11 @@ export function isSupabaseConfigured(): boolean {
     return false;
   }
 
-  // Real Supabase anon keys are long JWT strings
-  if (key.length < 100) {
+  // Support both legacy JWT anon keys and modern publishable keys.
+  const isPublishableKey = key.startsWith('sb_publishable_');
+  const isLegacyAnonKey = key.length >= 100;
+
+  if (!isPublishableKey && !isLegacyAnonKey) {
     return false;
   }
 
