@@ -10,6 +10,7 @@ export interface SwitchProps extends Omit<
   label?: React.ReactNode;
   description?: string;
   size?: SwitchSize;
+  onCheckedChange?: (checked: boolean) => void;
 }
 
 const trackSizeMap: Record<SwitchSize, string> = {
@@ -35,12 +36,18 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       disabled,
       checked,
       onChange,
+      onCheckedChange,
       ...props
     },
     ref
   ) => {
     const generatedId = useId();
     const switchId = customId || generatedId;
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.(e);
+      onCheckedChange?.(e.target.checked);
+    };
 
     return (
       <label
@@ -58,7 +65,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
             id={switchId}
             disabled={disabled}
             checked={checked}
-            onChange={onChange}
+            onChange={handleChange}
             className="peer sr-only"
             {...props}
           />

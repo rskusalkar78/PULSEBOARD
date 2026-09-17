@@ -6,6 +6,10 @@ export type AlertVariant = 'info' | 'success' | 'warning' | 'danger';
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: AlertVariant;
+  title?: string;
+  action?: React.ReactNode;
+  dismissible?: boolean;
+  onDismiss?: () => void;
   onClose?: () => void;
   icon?: React.ReactNode;
 }
@@ -43,12 +47,17 @@ const defaultIcons: Record<AlertVariant, React.ReactNode> = {
 export const Alert: React.FC<AlertProps> = ({
   className,
   variant = 'info',
+  title,
+  action,
+  dismissible,
+  onDismiss,
   onClose,
   icon,
   children,
   ...props
 }) => {
   const styles = variantStyles[variant];
+  const handleClose = onDismiss || onClose;
 
   return (
     <div
@@ -61,12 +70,16 @@ export const Alert: React.FC<AlertProps> = ({
       {...props}
     >
       <div className={cn('shrink-0 mt-0.5', styles.icon)}>{icon || defaultIcons[variant]}</div>
-      <div className="flex-1 pr-6">{children}</div>
-      {onClose && (
+      <div className="flex-1 space-y-1">
+        {title && <h5 className="font-semibold leading-none tracking-tight">{title}</h5>}
+        {children && <div className="text-sm opacity-90">{children}</div>}
+      </div>
+      {action && <div className="shrink-0">{action}</div>}
+      {(handleClose || dismissible) && (
         <button
           type="button"
-          onClick={onClose}
-          className="absolute right-3 top-3 rounded-md p-1 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current"
+          onClick={handleClose}
+          className="rounded-md p-1 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current"
           aria-label="Dismiss alert"
         >
           <X className="h-4 w-4" />
