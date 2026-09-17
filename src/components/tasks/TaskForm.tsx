@@ -17,7 +17,10 @@ import { useToastContext } from '@/contexts/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { X, Calendar, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils/styles';
-import type { Task, TaskStatus, TaskPriority } from '@/types';
+import { useEffect, useState } from 'react';
+import { projectService } from '@/services/project.service';
+import { profileService } from '@/services/profile.service';
+import type { Task, TaskStatus, TaskPriority, Project, Profile } from '@/types';
 
 // =====================================================
 // TYPES
@@ -88,6 +91,46 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
 
   // Determine schema based on whether we're creating or editing
   const schema = isEditing ? editTaskFormSchema : createTaskFormSchema;
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadFormOptions = async () => {
+      try {
+        setIsLoadingOptions(true);
+
+        const [projectsResponse, profilesResponse] = await Promise.all([
+          projectService.getAll(),
+          profileService.getAll(),
+        ]);
+
+        if (!mounted) return;
+
+        if (projectsResponse.success && projectsResponse.data) {
+          setProjects(projectsResponse.data);
+        }
+
+        if (profilesResponse.success && profilesResponse.data) {
+          setProfiles(profilesResponse.data);
+        }
+      } catch (error) {
+        console.error('Failed to load task form options:', error);
+      } finally {
+        if (mounted) {
+          setIsLoadingOptions(false);
+        }
+      }
+    };
+
+    loadFormOptions();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const {
     register,
@@ -236,9 +279,15 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
                     : 'border-slate-200 dark:border-slate-800'
                 )}
               >
-                <option value="">Select a project</option>
-                <option value="project-1">Sample Project 1</option>
-                <option value="project-2">Sample Project 2</option>
+                <option value="">
+                  {isLoadingOptions ? 'Loading projects...' : 'Select a project'}
+                </option>
+
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
               </select>
             </FormField>
           )}
@@ -295,9 +344,13 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
                   : 'border-slate-200 dark:border-slate-800'
               )}
             >
-              <option value="">Unassigned</option>
-              <option value="user-1">John Doe</option>
-              <option value="user-2">Jane Smith</option>
+              <option value="">{isLoadingOptions ? 'Loading users...' : 'Unassigned'}</option>
+
+              {profiles.map((profile) => (
+                <option key={profile.id} value={profile.id}>
+                  {profile.full_name || profile.email || 'Unnamed User'}
+                </option>
+              ))}
             </select>
           </FormField>
 
