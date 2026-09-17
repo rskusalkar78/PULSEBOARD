@@ -81,12 +81,21 @@ export const taskAssigneeSchema = z
  * Due date validation: ISO date or null
  */
 export const taskDueDateSchema = z
-  .union([z.string().datetime(), z.date()])
+  .union([
+    z.string().datetime(),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid due date'),
+    z.date(),
+  ])
   .optional()
   .nullable()
   .refine((date) => {
     if (!date) return true;
-    const dueDate = typeof date === 'string' ? new Date(date) : date;
+
+    const dueDate =
+      typeof date === 'string'
+        ? new Date(date.length === 10 ? `${date}T00:00:00.000Z` : date)
+        : date;
+
     return !isNaN(dueDate.getTime());
   }, 'Invalid due date')
   .describe('Due date for task');
