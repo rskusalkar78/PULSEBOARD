@@ -11,3 +11,6 @@ export type { TaskFormProps } from './TaskForm';
 
 export { TaskDetail } from './TaskDetail';
 export type { TaskDetailProps } from './TaskDetail';
+
+export { KanbanBoard } from '../kanban';
+export type { KanbanBoardProps } from '../kanban';

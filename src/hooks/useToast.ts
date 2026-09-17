@@ -49,25 +49,32 @@ const DEFAULT_DURATION = 5000;
 export function useToast(): UseToastReturn {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = useCallback((type: ToastType, options: string | ToastOptions) => {
-    const toast: Toast = {
-      id: crypto.randomUUID(),
-      type,
-      title: typeof options === 'string' ? options : options.title,
-      message: typeof options === 'object' ? options.message : undefined,
-      duration: typeof options === 'object' ? options.duration : DEFAULT_DURATION,
-      action: typeof options === 'object' ? options.action : undefined,
-    };
-
-    setToasts((prev) => [...prev, toast]);
-
-    // Auto dismiss after duration
-    if (toast.duration && toast.duration > 0) {
-      setTimeout(() => {
-        dismiss(toast.id);
-      }, toast.duration);
-    }
+  const dismiss = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
+
+  const addToast = useCallback(
+    (type: ToastType, options: string | ToastOptions) => {
+      const toast: Toast = {
+        id: crypto.randomUUID(),
+        type,
+        title: typeof options === 'string' ? options : options.title,
+        message: typeof options === 'object' ? options.message : undefined,
+        duration: typeof options === 'object' ? options.duration : DEFAULT_DURATION,
+        action: typeof options === 'object' ? options.action : undefined,
+      };
+
+      setToasts((prev) => [...prev, toast]);
+
+      // Auto dismiss after duration
+      if (toast.duration && toast.duration > 0) {
+        setTimeout(() => {
+          dismiss(toast.id);
+        }, toast.duration);
+      }
+    },
+    [dismiss]
+  );
 
   const success = useCallback(
     (options: string | ToastOptions) => {
@@ -96,10 +103,6 @@ export function useToast(): UseToastReturn {
     },
     [addToast]
   );
-
-  const dismiss = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
 
   const dismissAll = useCallback(() => {
     setToasts([]);
