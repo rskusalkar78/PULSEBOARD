@@ -217,7 +217,7 @@ class NotificationService extends BaseService<
       const { data, error } = await this.table
         .select('*')
         .eq('user_id', userId)
-        .eq('entity_type', entityType)
+        .eq('entity_type', entityType as NonNullable<Notification['entity_type']>)
         .eq('entity_id', entityId)
         .order('created_at', { ascending: false });
 
