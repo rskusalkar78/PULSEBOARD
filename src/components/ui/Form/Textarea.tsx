@@ -3,8 +3,8 @@ import { cn } from '@/utils/styles';
 
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
-  helperText?: string;
-  error?: string;
+  helperText?: string | undefined;
+  error?: string | undefined;
   fullWidth?: boolean;
 }
 

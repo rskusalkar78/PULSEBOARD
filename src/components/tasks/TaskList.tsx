@@ -310,6 +310,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   // Fetch tasks on component mount or when project changes
   useEffect(() => {
     fetchTasks(projectId ? { ...filters, projectId } : filters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   const handleFilterChange = (newFilters: Record<string, unknown>) => {
