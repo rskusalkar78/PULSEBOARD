@@ -250,7 +250,7 @@ export const ProjectsPage: React.FC = () => {
         id: p.id,
         label: p.full_name || p.email,
         sublabel: p.bio || p.role,
-        avatar: p.avatar_url || undefined,
+        ...(p.avatar_url ? { avatar: p.avatar_url } : {}),
       })),
     };
   }, [profiles]);
@@ -446,7 +446,11 @@ export const ProjectsPage: React.FC = () => {
     setProjects((prev) =>
       prev.map((p) =>
         p.id === project.id
-          ? { ...p, status: newStatus, progress: newStatus === 'completed' ? 100 : p.progress }
+          ? {
+              ...p,
+              status: newStatus,
+              progress: newStatus === 'completed' ? 100 : (p.progress ?? 0),
+            }
           : p
       )
     );
@@ -526,7 +530,7 @@ export const ProjectsPage: React.FC = () => {
       {/* Error Alert state if any */}
       {error && (
         <Alert
-          variant="error"
+          variant="danger"
           title="Error loading projects"
           action={
             <Button

@@ -187,7 +187,7 @@ export function ProfilePage() {
       </div>
 
       {/* Main Settings Form with Tabs */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" novalidate>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
         <Tabs
           value={activeTab}
           onValueChange={(val) => setActiveTab(val as 'general' | 'preferences')}
