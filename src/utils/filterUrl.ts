@@ -23,10 +23,11 @@ export function parseFilterUrl(searchParams: URLSearchParams): FilterState {
 
   let dateRange: FilterState['dateRange'] = undefined;
   if (presetParam || fromParam || toParam) {
+    const preset = presetParam || (fromParam || toParam ? 'custom' : undefined);
     dateRange = {
-      preset: presetParam || (fromParam || toParam ? 'custom' : undefined),
-      from: fromParam,
-      to: toParam,
+      ...(preset ? { preset } : {}),
+      ...(fromParam ? { from: fromParam } : {}),
+      ...(toParam ? { to: toParam } : {}),
     };
   }
 

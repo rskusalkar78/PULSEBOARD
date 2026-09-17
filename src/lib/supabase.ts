@@ -154,9 +154,10 @@ export function getTable<T extends keyof Database['public']['Tables']>(tableName
  */
 export async function callFunction<T extends keyof Database['public']['Functions']>(
   functionName: T,
-  args: Database['public']['Functions'][T]['Args']
+  args?: Record<string, unknown>
 ) {
-  return requireSupabase().rpc(functionName, args);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return requireSupabase().rpc(functionName, args as any);
 }
 
 // =====================================================
@@ -179,7 +180,7 @@ export function isAuthError(error: unknown): boolean {
 export function isPermissionError(error: unknown): boolean {
   if (typeof error === 'object' && error !== null) {
     const err = error as { code?: string; message?: string };
-    return (
+    return Boolean(
       err.code === '42501' ||
       err.code === 'PGRST301' ||
       err.message?.includes('permission denied') ||

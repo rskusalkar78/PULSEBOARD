@@ -197,7 +197,10 @@ export type TeamInsert = Omit<Team, 'id' | 'created_at' | 'updated_at'> &
 export type TeamMemberInsert = Omit<TeamMember, 'id' | 'joined_at'> &
   Partial<Pick<TeamMember, 'role' | 'permissions' | 'invited_by'>>;
 
-export type ProjectInsert = Omit<Project, 'id' | 'created_at' | 'updated_at'> &
+export type ProjectInsert = Omit<
+  Project,
+  'id' | 'created_at' | 'updated_at' | 'settings' | 'icon'
+> &
   Partial<
     Pick<
       Project,
@@ -255,7 +258,7 @@ export type TeamMemberUpdate = Partial<
   Omit<TeamMember, 'id' | 'team_id' | 'user_id' | 'joined_at'>
 >;
 
-export type ProjectUpdate = Partial<Omit<Project, 'id' | 'owner_id' | 'created_at' | 'updated_at'>>;
+export type ProjectUpdate = Partial<Omit<Project, 'id' | 'created_at' | 'updated_at'>>;
 
 export type TaskUpdate = Partial<
   Omit<Task, 'id' | 'project_id' | 'created_by' | 'created_at' | 'updated_at'>
@@ -289,8 +292,8 @@ export interface TeamMemberWithTeam extends TeamMember {
 }
 
 export interface ProjectWithRelations extends Project {
-  owner?: Profile;
-  team?: Team;
+  owner?: Profile | undefined;
+  team?: Team | undefined;
   _count?: {
     tasks: number;
     activities: number;
