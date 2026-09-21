@@ -22,7 +22,21 @@ export type TaskStatus = 'todo' | 'in_progress' | 'in_review' | 'completed' | 'c
 
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
-export type ActivityEntityType = 'project' | 'task' | 'team' | 'user' | 'comment';
+export type ActivityEntityType = 'project' | 'task' | 'team' | 'user' | 'comment' | 'settings';
+
+export type ActivityActionType =
+  | 'project_created'
+  | 'project_updated'
+  | 'task_created'
+  | 'task_completed'
+  | 'task_assigned'
+  | 'member_joined'
+  | 'settings_changed'
+  | 'comment_added'
+  | 'project_archived'
+  | 'task_updated'
+  | 'task_deleted'
+  | 'member_left';
 
 export type NotificationType =
   'mention' | 'assignment' | 'comment' | 'status_change' | 'due_date' | 'team_invite' | 'system';
@@ -315,10 +329,30 @@ export interface TaskWithRelations extends Task {
   subtasks?: Task[];
 }
 
+export interface ActivityMetadata extends Record<string, unknown> {
+  title?: string | undefined;
+  description?: string | undefined;
+  project_name?: string | undefined;
+  task_title?: string | undefined;
+  task_status?: TaskStatus | undefined;
+  task_priority?: TaskPriority | undefined;
+  assigned_to_id?: string | undefined;
+  assigned_to_name?: string | undefined;
+  team_name?: string | undefined;
+  member_role?: string | undefined;
+  setting_key?: string | undefined;
+  setting_scope?: ('user' | 'team' | 'project' | 'system') | undefined;
+  old_value?: unknown;
+  new_value?: unknown;
+  changes?: Record<string, { from: unknown; to: unknown }> | undefined;
+}
+
 export interface ActivityWithRelations extends Activity {
   actor?: Profile;
   project?: Project;
   team?: Team;
+  task?: Task;
+  target_user?: Profile;
 }
 
 export interface NotificationWithRelations extends Notification {
@@ -366,7 +400,10 @@ export interface ActivityFilters {
   entity_id?: string;
   project_id?: string;
   team_id?: string;
-  action?: string;
+  action?: ActivityActionType | string;
+  search?: string;
+  date_from?: string;
+  date_to?: string;
 }
 
 export interface NotificationFilters {

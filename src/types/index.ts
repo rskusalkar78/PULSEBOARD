@@ -14,6 +14,7 @@ export type {
   TaskStatus,
   TaskPriority,
   ActivityEntityType,
+  ActivityActionType,
   NotificationType,
   NotificationEntityType,
   AnalyticsEventCategory,
@@ -22,6 +23,7 @@ export type {
   TeamSettings,
   TeamMemberPermissions,
   ProjectSettings,
+  ActivityMetadata,
   // Core Tables
   Profile,
   Team,

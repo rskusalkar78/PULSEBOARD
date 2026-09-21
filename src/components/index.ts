@@ -47,3 +47,6 @@ export * from './filters';
 
 // Project components
 export * from './projects';
+
+// Activity components
+export * from './activity';
