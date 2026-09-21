@@ -116,6 +116,12 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
           }
           items={[
             {
+              id: 'view-all-activity',
+              label: 'View Full Activity Feed',
+              icon: <FileText className="h-4 w-4 text-purple-500" />,
+              onClick: () => navigate('/activity'),
+            },
+            {
               id: 'view-projects',
               label: 'View Project Activity',
               icon: <FolderPlus className="h-4 w-4 text-violet-500" />,
@@ -131,7 +137,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
               id: 'filter-logs',
               label: 'Filter Activity Logs',
               icon: <Filter className="h-4 w-4 text-slate-500" />,
-              onClick: () => navigate('/analytics'),
+              onClick: () => navigate('/activity'),
             },
           ]}
         />

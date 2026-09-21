@@ -8,7 +8,6 @@ import { Plus, Search, RefreshCw } from 'lucide-react';
 import { TaskForm } from '@/components/tasks/TaskForm';
 import { TaskDetail } from '@/components/tasks/TaskDetail';
 import { Dialog } from '@/components/ui/Overlay/Dialog';
-
 export interface KanbanBoardProps {
   projectId?: string;
 }
