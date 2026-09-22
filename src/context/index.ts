@@ -11,3 +11,10 @@ export {
   type ResolvedTheme,
   type ThemeContextValue,
 } from './ThemeContext';
+
+export {
+  NotificationProvider,
+  useNotifications,
+  type NotificationPreferencesState,
+  type CategoryCount,
+} from './NotificationContext';
