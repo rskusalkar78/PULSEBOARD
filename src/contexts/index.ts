@@ -14,3 +14,6 @@ export type {
   TaskSort,
   TaskPagination,
 } from './TaskContext';
+
+export { GlobalSearchProvider, useGlobalSearch } from './GlobalSearchContext';
+export type { GlobalSearchContextType } from './GlobalSearchContext';

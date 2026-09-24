@@ -50,3 +50,6 @@ export * from './projects';
 
 // Activity components
 export * from './activity';
+
+// Search components
+export * from './search';
