@@ -123,3 +123,6 @@ export type {
   BatchOperation,
   BatchResult,
 } from './supabase.types';
+
+// Search types
+export * from './search';
