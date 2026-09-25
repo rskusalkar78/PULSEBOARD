@@ -17,3 +17,4 @@ export type { Toast, ToastType, ToastOptions, UseToastReturn } from './useToast'
 
 export { useProfile } from './useProfile';
 export { useNotifications } from './useNotifications';
+export { useDataTable } from './useDataTable';

@@ -126,3 +126,6 @@ export type {
 
 // Search types
 export * from './search';
+
+// DataTable types
+export type * from './table';
