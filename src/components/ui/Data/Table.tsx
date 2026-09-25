@@ -125,3 +125,8 @@ export const TableCaption: React.FC<React.HTMLAttributes<HTMLTableCaptionElement
     {children}
   </caption>
 );
+
+// Advanced DataTable infrastructure exports
+export { DataTable } from './DataTable';
+export { useDataTable } from '@/hooks/useDataTable';
+export type * from '@/types/table';
