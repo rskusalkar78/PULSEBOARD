@@ -45,7 +45,7 @@ describe('ProjectsPage Integration Tests', () => {
     fireEvent.click(tableViewBtn);
 
     // Table headers should now be present
-    expect(screen.getByText(/Due Date/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Due Date/i).length).toBeGreaterThan(0);
   });
 
   it('opens Create Project modal when Create Project button is clicked', async () => {

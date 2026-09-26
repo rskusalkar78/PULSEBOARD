@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { TableX } from 'lucide-react';
+import { TableProperties } from 'lucide-react';
 import { useDataTableContext } from './DataTableContext';
 
 export interface DataTableEmptyStateProps {
@@ -23,7 +23,9 @@ export function DataTableEmptyState({
 }: DataTableEmptyStateProps) {
   const { enableRowSelection } = useDataTableContext();
   const totalCols = columnCount + (enableRowSelection ? 1 : 0);
-  const resolvedIcon = icon ?? <TableX className="h-8 w-8 text-slate-400 dark:text-slate-500" />;
+  const resolvedIcon = icon ?? (
+    <TableProperties className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+  );
 
   return (
     <tbody className="dt-tbody">
