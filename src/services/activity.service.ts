@@ -23,6 +23,18 @@ import type {
 
 const STORAGE_KEY = 'pulseboard_activity_feed_v1';
 
+async function withTimeout<T>(promise: Promise<T>, ms = 400): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined = undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Network request timed out')), ms);
+  });
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
 // Initial realistic activities across all 7 event types for demo & offline mode
 const INITIAL_DEMO_ACTIVITIES: ActivityWithRelations[] = [
   {
@@ -409,18 +421,6 @@ class ActivityService extends BaseService<
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
-    };
-
-    const withTimeout = async <T>(promise: Promise<T>, ms = 400): Promise<T> => {
-      let timer: ReturnType<typeof setTimeout>;
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error('Network request timed out')), ms);
-      });
-      try {
-        return await Promise.race([promise, timeoutPromise]);
-      } finally {
-        clearTimeout(timer);
-      }
     };
 
     // Try Supabase first if configured
