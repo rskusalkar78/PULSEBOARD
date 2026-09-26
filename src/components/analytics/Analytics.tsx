@@ -1,18 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { Filter, RefreshCw } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { ContentContainer } from '@/components/layout/ContentContainer';
 import { Button } from '@/components/ui/Button/Button';
-import {
-  ProductivityTrends,
-  ProjectCompletionTrends,
-  TaskCompletionRate,
-  TeamActivityComparison,
-  WeeklyMonthlyComparison,
-} from './index';
+import { ChartSkeleton } from './ChartSkeleton';
 import { generateMockAnalyticsData } from './chartUtils';
 import type { TimePeriod } from '@/types/dashboard';
 import { cn } from '@/utils/styles';
+
+const ProductivityTrends = lazy(() =>
+  import('./ProductivityTrends').then((m) => ({ default: m.ProductivityTrends }))
+);
+const ProjectCompletionTrends = lazy(() =>
+  import('./ProjectCompletionTrends').then((m) => ({ default: m.ProjectCompletionTrends }))
+);
+const TaskCompletionRate = lazy(() =>
+  import('./TaskCompletionRate').then((m) => ({ default: m.TaskCompletionRate }))
+);
+const TeamActivityComparison = lazy(() =>
+  import('./TeamActivityComparison').then((m) => ({ default: m.TeamActivityComparison }))
+);
+const WeeklyMonthlyComparison = lazy(() =>
+  import('./WeeklyMonthlyComparison').then((m) => ({ default: m.WeeklyMonthlyComparison }))
+);
 
 export interface AnalyticsProps {
   className?: string;
@@ -310,18 +320,20 @@ export const Analytics: React.FC<AnalyticsProps> = ({ className }) => {
           </div>
 
           {/* Charts */}
-          <div className="space-y-6">
-            <ProductivityTrends data={analyticsData} loading={isLoading} />
+          <Suspense fallback={<ChartSkeleton className="h-80" />}>
+            <div className="space-y-6">
+              <ProductivityTrends data={analyticsData} loading={isLoading} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ProjectCompletionTrends data={analyticsData} loading={isLoading} />
-              <TaskCompletionRate data={analyticsData} loading={isLoading} />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ProjectCompletionTrends data={analyticsData} loading={isLoading} />
+                <TaskCompletionRate data={analyticsData} loading={isLoading} />
+              </div>
+
+              <TeamActivityComparison data={analyticsData} loading={isLoading} />
+
+              <WeeklyMonthlyComparison data={comparisonData} loading={isLoading} />
             </div>
-
-            <TeamActivityComparison data={analyticsData} loading={isLoading} />
-
-            <WeeklyMonthlyComparison data={comparisonData} loading={isLoading} />
-          </div>
+          </Suspense>
 
           {/* Footer Info */}
           <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 p-4 text-center">

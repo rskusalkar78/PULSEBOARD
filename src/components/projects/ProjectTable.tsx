@@ -10,7 +10,19 @@ import {
   Calendar,
   FolderKanban,
 } from 'lucide-react';
-import { Card, Badge, Avatar, Progress, Dropdown, Table } from '@/components';
+import {
+  Card,
+  Badge,
+  Avatar,
+  Progress,
+  Dropdown,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components';
 import type { ProjectWithDetails, ProjectStatus } from '@/types';
 
 export interface ProjectTableProps {
@@ -22,12 +34,12 @@ export interface ProjectTableProps {
 
 const statusConfig: Record<
   ProjectStatus,
-  { label: string; variant: 'primary' | 'success' | 'warning' | 'neutral' }
+  { label: string; variant: 'primary' | 'success' | 'warning' | 'default' }
 > = {
   active: { label: 'Active', variant: 'primary' },
   completed: { label: 'Completed', variant: 'success' },
   on_hold: { label: 'On Hold', variant: 'warning' },
-  archived: { label: 'Archived', variant: 'neutral' },
+  archived: { label: 'Archived', variant: 'default' },
 };
 
 const priorityConfig: Record<string, { label: string; colorClass: string }> = {
@@ -224,7 +236,24 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({
 
   return (
     <Card className="p-0 overflow-hidden">
-      <Table columns={columns} data={projects} keyExtractor={(p) => p.id} />
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {columns.map((col) => (
+              <TableHead key={col.key}>{col.header}</TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {projects.map((project) => (
+            <TableRow key={project.id}>
+              {columns.map((col) => (
+                <TableCell key={col.key}>{col.cell(project)}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </Card>
   );
 };

@@ -24,14 +24,14 @@ const statusConfig: Record<
   ProjectStatus,
   {
     label: string;
-    variant: 'primary' | 'success' | 'warning' | 'neutral';
+    variant: 'primary' | 'success' | 'warning' | 'default';
     icon: React.ComponentType<{ className?: string }>;
   }
 > = {
   active: { label: 'Active', variant: 'primary', icon: Clock },
   completed: { label: 'Completed', variant: 'success', icon: CheckCircle2 },
   on_hold: { label: 'On Hold', variant: 'warning', icon: PauseCircle },
-  archived: { label: 'Archived', variant: 'neutral', icon: Archive },
+  archived: { label: 'Archived', variant: 'default', icon: Archive },
 };
 
 const priorityConfig: Record<string, { label: string; colorClass: string }> = {
