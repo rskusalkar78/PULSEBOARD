@@ -12,6 +12,13 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:watch": "vitest --coverage",
+    "test:unit": "vitest run --dir src/utils --dir src/hooks",
+    "test:services": "vitest run --dir src/services",
+    "test:components": "vitest run --dir src/components",
+    "test:integration": "vitest run --dir src/__tests__/integration",
     "prepare": "husky"
   },
   "dependencies": {
@@ -36,6 +43,8 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^3.2.7",
+    "@vitest/ui": "^3.2.7",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-react-hooks": "^5.1.0",
