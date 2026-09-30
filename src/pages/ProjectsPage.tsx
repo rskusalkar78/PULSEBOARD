@@ -509,7 +509,7 @@ export const ProjectsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="projects-page">
       {/* Header */}
       <PageHeader
         title="Projects"
@@ -518,6 +518,7 @@ export const ProjectsPage: React.FC = () => {
         actions={
           <Button
             variant="primary"
+            data-testid="create-project-button"
             onClick={handleOpenCreateModal}
             className="flex items-center gap-2"
           >

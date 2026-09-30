@@ -141,11 +141,12 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
             : 'Add a new project to track work, deadlines, and team progress.'}
         </DialogDescription>
       </DialogHeader>
-      <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+      <form onSubmit={handleSubmit} className="space-y-4 pt-2" data-testid="project-form">
         {/* Project Name */}
         <Input
           label="Project Name *"
           placeholder="e.g., Redesign Dashboard UI"
+          data-testid="project-name-input"
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
           error={errors.name}
@@ -155,6 +156,7 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
         <Textarea
           label="Description"
           placeholder="Brief overview of project goals and scope..."
+          data-testid="project-desc-input"
           rows={3}
           value={formData.description}
           onChange={(e) => handleChange('description', e.target.value)}
@@ -292,7 +294,12 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
           <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button type="submit" variant="primary" loading={isSubmitting}>
+          <Button
+            type="submit"
+            variant="primary"
+            data-testid="project-submit-button"
+            loading={isSubmitting}
+          >
             {isEditing ? 'Save Changes' : 'Create Project'}
           </Button>
         </div>
