@@ -76,23 +76,33 @@ export function RegisterPage() {
       </div>
 
       {authError && (
-        <Alert variant="danger" onClose={() => setAuthError(null)}>
+        <Alert variant="danger" onClose={() => setAuthError(null)} data-testid="register-error">
           <AlertDescription>{authError}</AlertDescription>
         </Alert>
       )}
 
       {registeredSuccess && (
-        <Alert variant="success" icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />}>
+        <Alert
+          variant="success"
+          icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+          data-testid="register-success"
+        >
           <AlertDescription>
             Account created successfully! Redirecting to email verification...
           </AlertDescription>
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        className="space-y-4"
+        data-testid="register-form"
+      >
         <Input
           {...register('fullName')}
           id="register-fullname"
+          data-testid="register-fullname"
           label="Full Name"
           placeholder="Alex Morgan"
           leftAddon={<UserIcon className="w-4 h-4" />}
@@ -104,6 +114,7 @@ export function RegisterPage() {
         <Input
           {...register('email')}
           id="register-email"
+          data-testid="register-email"
           type="email"
           label="Work Email"
           placeholder="alex.morgan@pulseboard.io"
@@ -117,6 +128,7 @@ export function RegisterPage() {
           <PasswordInput
             {...register('password')}
             id="register-password"
+            data-testid="register-password"
             label="Password"
             placeholder="••••••••"
             error={errors.password?.message}
@@ -147,6 +159,7 @@ export function RegisterPage() {
         <PasswordInput
           {...register('confirmPassword')}
           id="register-confirm-password"
+          data-testid="register-confirm-password"
           label="Confirm Password"
           placeholder="••••••••"
           error={errors.confirmPassword?.message}
@@ -158,6 +171,7 @@ export function RegisterPage() {
           <Checkbox
             {...register('termsAccepted')}
             id="terms-accepted"
+            data-testid="register-terms"
             label={
               <span>
                 I agree to the{' '}
@@ -185,6 +199,7 @@ export function RegisterPage() {
 
         <Button
           type="submit"
+          data-testid="register-submit"
           variant="primary"
           size="lg"
           fullWidth

@@ -67,6 +67,7 @@ export const UserMenu: React.FC = () => {
       {/* User Menu Button */}
       <button
         ref={buttonRef}
+        data-testid="user-menu-button"
         onClick={handleToggle}
         className={cn(
           'flex items-center gap-2 rounded-lg px-2 py-1.5',
@@ -100,6 +101,7 @@ export const UserMenu: React.FC = () => {
       {isOpen && (
         <div
           ref={menuRef}
+          data-testid="user-menu-dropdown"
           className={cn(
             'absolute right-0 top-full mt-2 w-64',
             'bg-white dark:bg-slate-900',
@@ -149,6 +151,7 @@ export const UserMenu: React.FC = () => {
 
             <button
               onClick={() => handleMenuItemClick(() => navigate('/settings'))}
+              data-testid="settings-menu-link"
               className={cn(
                 'w-full flex items-center gap-3 px-4 py-2 text-sm',
                 'text-slate-700 dark:text-slate-300',
@@ -182,6 +185,7 @@ export const UserMenu: React.FC = () => {
           <div className="border-t border-slate-200 dark:border-slate-800 py-1">
             <button
               onClick={() => handleMenuItemClick(handleLogout)}
+              data-testid="logout-button"
               className={cn(
                 'w-full flex items-center gap-3 px-4 py-2 text-sm',
                 'text-rose-600 dark:text-rose-400',

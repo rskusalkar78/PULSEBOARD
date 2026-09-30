@@ -296,12 +296,16 @@ export const GlobalSearchModal: React.FC = () => {
       />
 
       {/* Palette Container */}
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh] z-10">
+      <div
+        data-testid="global-search-modal"
+        className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden transition-all animate-in zoom-in-95 duration-200 flex flex-col max-h-[85vh] z-10"
+      >
         {/* Search Header */}
         <div className="relative flex items-center px-4 py-3.5 border-b border-slate-200 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
           <Search className="h-5 w-5 text-slate-400 dark:text-slate-500 shrink-0 mr-3" />
           <input
             ref={inputRef}
+            data-testid="global-search-input"
             type="text"
             role="combobox"
             aria-expanded="true"

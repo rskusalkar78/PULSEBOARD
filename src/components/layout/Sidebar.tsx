@@ -119,6 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsible = false,
               <li key={item.href}>
                 <NavLink
                   to={item.href}
+                  data-testid={`nav-${item.label.toLowerCase()}`}
                   className={({ isActive }) =>
                     cn(
                       'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
