@@ -48,15 +48,21 @@ export function LoginPage() {
       </div>
 
       {authError && (
-        <Alert variant="danger" onClose={() => setAuthError(null)}>
+        <Alert variant="danger" onClose={() => setAuthError(null)} data-testid="login-error">
           <AlertDescription>{authError}</AlertDescription>
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        className="space-y-4"
+        data-testid="login-form"
+      >
         <Input
           {...register('email')}
           id="login-email"
+          data-testid="login-email"
           type="email"
           label="Work Email"
           placeholder="alex.morgan@pulseboard.io"
@@ -79,6 +85,7 @@ export function LoginPage() {
           <PasswordInput
             {...register('password')}
             id="login-password"
+            data-testid="login-password"
             label="Password"
             placeholder="••••••••"
             error={errors.password?.message}
@@ -98,6 +105,7 @@ export function LoginPage() {
 
         <Button
           type="submit"
+          data-testid="login-submit"
           variant="primary"
           size="lg"
           fullWidth

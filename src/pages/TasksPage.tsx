@@ -27,7 +27,7 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="space-y-6 flex flex-col h-full">
+    <div className="space-y-6 flex flex-col h-full" data-testid="tasks-page">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -44,6 +44,7 @@ export default function TasksPage() {
           <div className="inline-flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
             <button
               type="button"
+              data-testid="kanban-view-btn"
               onClick={() => handleViewChange('kanban')}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
@@ -57,6 +58,7 @@ export default function TasksPage() {
             </button>
             <button
               type="button"
+              data-testid="list-view-btn"
               onClick={() => handleViewChange('list')}
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',

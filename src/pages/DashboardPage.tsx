@@ -125,7 +125,7 @@ const DashboardContent: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="dashboard-page">
       {/* Page Header */}
       <PageHeader
         title="Dashboard"
