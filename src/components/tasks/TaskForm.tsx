@@ -239,6 +239,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
         <FormField label="Task Title" required error={errors.title?.message}>
           <input
             {...register('title')}
+            data-testid="task-title-input"
             type="text"
             placeholder="Enter task title"
             className={cn(
@@ -254,6 +255,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
         <FormField label="Description" error={errors.description?.message}>
           <textarea
             {...register('description')}
+            data-testid="task-desc-input"
             placeholder="Enter task description (optional)"
             rows={4}
             className={cn(
@@ -272,6 +274,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
             <FormField label="Project" required error={errors.project_id?.message}>
               <select
                 {...register('project_id')}
+                data-testid="task-project-select"
                 className={cn(
                   'w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500',
                   errors.project_id
@@ -296,6 +299,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
           <FormField label="Status" required error={errors.status?.message}>
             <select
               {...register('status')}
+              data-testid="task-status-select"
               className={cn(
                 'w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500',
                 errors.status
@@ -315,6 +319,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
           <FormField label="Priority" required error={errors.priority?.message}>
             <select
               {...register('priority')}
+              data-testid="task-priority-select"
               className={cn(
                 'w-full px-4 py-2.5 border rounded-lg bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500',
                 errors.priority
@@ -429,6 +434,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ task, projectId, onClose, on
           )}
           <button
             type="submit"
+            data-testid="task-submit-button"
             disabled={isSubmitting || !isValid}
             className={cn(
               'flex-1 px-4 py-2.5 rounded-lg font-medium transition-colors',
