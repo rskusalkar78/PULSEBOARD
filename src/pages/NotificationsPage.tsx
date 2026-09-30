@@ -89,7 +89,7 @@ export function NotificationsPage() {
   const hasTotal = notifications.length > 0;
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+    <div className="space-y-6 max-w-5xl mx-auto pb-12" data-testid="notifications-page">
       {/* Top Header & Overview */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -109,6 +109,7 @@ export function NotificationsPage() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
+            data-testid="simulate-notification-btn"
             onClick={() => handleSimulateNotification('assignment')}
             className="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-colors shadow-md shadow-indigo-600/20"
           >

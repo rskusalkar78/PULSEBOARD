@@ -129,6 +129,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
   return (
     <div
+      data-testid="notification-item"
       className={cn(
         'group relative flex items-start gap-3 rounded-xl transition-all duration-200 border',
         compact ? 'p-3 text-xs' : 'p-4 text-sm',

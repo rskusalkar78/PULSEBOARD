@@ -2,7 +2,7 @@ import { Settings, Sliders, Bell, Key } from 'lucide-react';
 
 export function SettingsPage() {
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl" data-testid="settings-page">
       <div>
         <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
           <Settings className="w-6 h-6 text-indigo-400" />
@@ -29,6 +29,7 @@ export function SettingsPage() {
               </div>
               <input
                 type="checkbox"
+                data-testid="dark-mode-toggle"
                 defaultChecked
                 className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-indigo-600 accent-indigo-600"
               />
@@ -79,7 +80,10 @@ export function SettingsPage() {
             <div className="font-mono text-xs text-slate-400 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
               pb_live_99f82a17...48d0a
             </div>
-            <button className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700">
+            <button
+              data-testid="regenerate-api-key-btn"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-xl border border-slate-700"
+            >
               Regenerate Key
             </button>
           </div>
