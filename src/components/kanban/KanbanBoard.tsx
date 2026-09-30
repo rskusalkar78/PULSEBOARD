@@ -224,6 +224,7 @@ export function KanbanBoard({ projectId }: KanbanBoardProps) {
 
           <button
             type="button"
+            data-testid="new-task-button"
             onClick={() => handleOpenAddTask('todo')}
             className="flex items-center gap-1.5 px-3.5 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold text-sm shadow-xs transition-colors"
           >

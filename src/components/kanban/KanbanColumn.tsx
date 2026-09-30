@@ -33,7 +33,10 @@ export const KanbanColumn = memo(function KanbanColumn({
   onSelectTask,
 }: KanbanColumnProps) {
   return (
-    <div className="flex flex-col flex-shrink-0 w-80 md:w-80 lg:w-84 max-h-full rounded-2xl bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 p-3 shadow-xs transition-colors">
+    <div
+      data-testid={`kanban-column-${column.id}`}
+      className="flex flex-col flex-shrink-0 w-80 md:w-80 lg:w-84 max-h-full rounded-2xl bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 p-3 shadow-xs transition-colors"
+    >
       {/* Column Header */}
       <div className="flex items-center justify-between px-1 py-1 mb-3">
         <div className="flex items-center gap-2">

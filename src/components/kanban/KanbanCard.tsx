@@ -70,6 +70,7 @@ export const KanbanCard = memo(function KanbanCard({
           onClick={() => onSelect?.(task)}
           tabIndex={0}
           role="button"
+          data-testid={`kanban-card-${task.id}`}
           aria-label={`Task: ${task.title}. Priority: ${task.priority}. Press spacebar to lift.`}
           className={cn(
             'group relative p-3.5 mb-3 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-200 border-l-4 select-none cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-violet-500/50',
