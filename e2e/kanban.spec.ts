@@ -2,14 +2,25 @@ import { test, expect } from '@playwright/test';
 
 test.describe('7. Kanban Drag and Drop Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
-    await page.evaluate(() => {
+    await page.addInitScript(() => {
+      localStorage.clear();
       localStorage.setItem('pulseboard_auth_state', 'true');
+      localStorage.setItem(
+        'pulseboard_mock_user',
+        JSON.stringify({
+          id: 'usr_mock_123',
+          email: 'alex.morgan@pulseboard.io',
+          name: 'Alex Morgan',
+          role: 'Product Lead',
+          emailConfirmedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        })
+      );
     });
-    await page.goto('/tasks');
   });
 
   test('should render all kanban columns', async ({ page }) => {
+    await page.goto('/tasks');
     await expect(page.getByTestId('kanban-column-backlog')).toBeVisible();
     await expect(page.getByTestId('kanban-column-todo')).toBeVisible();
     await expect(page.getByTestId('kanban-column-in_progress')).toBeVisible();
@@ -18,6 +29,7 @@ test.describe('7. Kanban Drag and Drop Flow', () => {
   });
 
   test('should toggle between Kanban and List views', async ({ page }) => {
+    await page.goto('/tasks');
     await page.getByTestId('list-view-btn').click();
     await expect(page.getByRole('table')).toBeVisible();
 
@@ -26,6 +38,7 @@ test.describe('7. Kanban Drag and Drop Flow', () => {
   });
 
   test('should support moving a task from Todo to In Progress', async ({ page }) => {
+    await page.goto('/tasks');
     const taskTitle = `Kanban Move Task ${Date.now()}`;
     await page.getByTestId('new-task-button').click();
     await page.getByTestId('task-title-input').fill(taskTitle);
@@ -41,17 +54,14 @@ test.describe('7. Kanban Drag and Drop Flow', () => {
 
     await page.getByTestId('task-submit-button').click();
 
-    // Verify task is in Todo column
     const todoCol = page.getByTestId('kanban-column-todo');
     await expect(todoCol).toContainText(taskTitle);
 
-    // Perform drag & drop from todo column to in_progress column
     const card = page.getByText(taskTitle);
     const targetCol = page.getByTestId('kanban-column-in_progress');
 
     await card.dragTo(targetCol);
 
-    // Verify task is now in In Progress column
     await expect(page.getByTestId('kanban-column-in_progress')).toContainText(taskTitle);
   });
 });
