@@ -3,7 +3,7 @@
  * Placeholder values from .env.example fall back to local demo auth.
  */
 
-const PLACEHOLDER_URL_MARKERS = ['your-project-ref', 'your-project-id'];
+const PLACEHOLDER_URL_MARKERS = ['your-project-ref', 'your-project-id', 'ipwaxpwoabiqvfpdpcmo'];
 const PLACEHOLDER_KEY_MARKERS = ['your-supabase-anon-key', 'your-anon-key'];
 
 export function isSupabaseConfigured(): boolean {

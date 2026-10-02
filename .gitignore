@@ -40,3 +40,8 @@ coverage
 # Cache
 .eslintcache
 .stylelintcache
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
