@@ -5,6 +5,7 @@ node_modules
 # Production Build Outputs
 dist
 dist-ssr
+storybook-static
 *.local
 
 # Environment Variables
