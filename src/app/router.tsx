@@ -28,6 +28,7 @@ const VerifyEmailPage = lazy(() => import('@/pages/VerifyEmailPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const DesignSystemPage = lazy(() => import('@/pages/DesignSystemPage'));
 const ThemeVerificationPage = lazy(() => import('@/pages/ThemeVerificationPage'));
+const DocsPage = lazy(() => import('@/pages/DocsPage'));
 
 const withSuspense = (Component: React.ComponentType) => (
   <Suspense fallback={<PageLoader />}>
@@ -148,6 +149,11 @@ export const router = createBrowserRouter([
       {
         path: 'theme-verification',
         element: withSuspense(ThemeVerificationPage),
+      },
+      // Professional Documentation Route
+      {
+        path: 'docs',
+        element: withSuspense(DocsPage),
       },
       // 404 Catch-All Route
       {

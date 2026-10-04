@@ -33,7 +33,7 @@ const navigationItems: NavItem[] = [
   { label: 'Tasks', icon: <CheckSquare className="h-5 w-5" />, href: '/tasks' },
   { label: 'Team', icon: <Users className="h-5 w-5" />, href: '/team' },
   { label: 'Settings', icon: <Settings className="h-5 w-5" />, href: '/settings' },
-  { label: 'Help', icon: <HelpCircle className="h-5 w-5" />, href: '/help' },
+  { label: 'Documentation', icon: <HelpCircle className="h-5 w-5" />, href: '/docs' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, isCollapsible = false, onClose }) => {
