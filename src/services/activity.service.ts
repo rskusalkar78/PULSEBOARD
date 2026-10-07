@@ -23,13 +23,13 @@ import type {
 
 const STORAGE_KEY = 'pulseboard_activity_feed_v1';
 
-async function withTimeout<T>(promise: Promise<T>, ms = 400): Promise<T> {
+async function withTimeout<T>(promise: PromiseLike<T>, ms = 400): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined = undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
     timer = setTimeout(() => reject(new Error('Network request timed out')), ms);
   });
   try {
-    return await Promise.race([promise, timeoutPromise]);
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
   } finally {
     if (timer !== undefined) clearTimeout(timer);
   }

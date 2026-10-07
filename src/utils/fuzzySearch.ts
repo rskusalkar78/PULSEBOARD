@@ -186,7 +186,7 @@ export function getHighlightSegments(text: string, query: string): MatchSegment[
       mergedRanges.push(range);
     } else {
       const prev = mergedRanges[mergedRanges.length - 1];
-      if (range[0] <= prev[1]) {
+      if (prev && range[0] <= prev[1]) {
         prev[1] = Math.max(prev[1], range[1]);
       } else {
         mergedRanges.push(range);
