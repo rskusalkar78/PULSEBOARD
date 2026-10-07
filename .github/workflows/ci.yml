@@ -1,47 +1,178 @@
-name: CI & Playwright E2E Tests
+name: Production CI/CD Pipeline
 
 on:
   push:
     branches: [main, master, dev]
   pull_request:
     branches: [main, master, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  test:
-    timeout-minutes: 60
+  # Stage 1-4: Install, Type Check, Lint, Format Check
+  quality-checks:
+    name: Code Quality (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20.x', '22.x']
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: 1. Install dependencies
         run: npm ci
 
-      - name: Check code formatting and linting
-        run: |
-          npm run format:check || true
-          npm run lint || true
+      - name: 2. Type check
+        run: npm run typecheck
 
-      - name: Run unit & integration tests
+      - name: 3. Lint check
+        run: npm run lint
+
+      - name: 4. Format check
+        run: npm run format:check
+
+  # Stage 5-6: Unit Tests & Coverage
+  unit-tests:
+    name: Unit Tests & Coverage (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: quality-checks
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20.x', '22.x']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 1. Install dependencies
+        run: npm ci
+
+      - name: 5. Run Unit tests
         run: npm run test
 
-      - name: Install Playwright Browsers
+      - name: 6. Run Test Coverage
+        run: npm run test:coverage
+
+      - name: Upload Coverage Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: coverage/
+          retention-days: 14
+
+  # Stage 7-8: Application & Storybook Build
+  build:
+    name: Build Application & Storybook
+    runs-on: ubuntu-latest
+    needs: quality-checks
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: 1. Install dependencies
+        run: npm ci
+
+      - name: 7. Build Production Bundle
+        run: npm run build
+
+      - name: 8. Build Storybook
+        run: npm run build-storybook
+
+      - name: Upload App Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-build
+          path: dist/
+          retention-days: 14
+
+      - name: Upload Storybook Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static/
+          retention-days: 14
+
+  # Stage 9: E2E Tests
+  e2e-tests:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: 1. Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers with Dependencies
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright E2E tests
+      - name: 9. Run E2E Tests
         run: npm run test:e2e
 
-      - name: Upload Playwright Report on Failure
+      - name: Upload Playwright E2E Test Report
         uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && failure() }}
+        if: always()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
+
+  # Stage 10: Deployment
+  deployment:
+    name: Production Deployment
+    runs-on: ubuntu-latest
+    needs: [unit-tests, build, e2e-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download App Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-build
+          path: dist
+
+      - name: 10. Deploy Production Artifacts
+        run: |
+          echo "=========================================="
+          echo "PulseBoard Production Deployment Stage"
+          echo "Environment: Production (Main Branch)"
+          echo "Artifacts verified and ready for distribution."
+          echo "=========================================="
