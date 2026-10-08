@@ -3,7 +3,6 @@
  * Integrates with the existing Pagination primitive for page buttons.
  */
 
-import React from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/utils/styles';
 import { useDataTableContext } from './DataTableContext';

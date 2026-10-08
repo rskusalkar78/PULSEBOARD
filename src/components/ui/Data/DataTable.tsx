@@ -3,7 +3,7 @@
  * Orchestrates toolbar, header, body, skeleton loading, empty state, pagination, and bulk actions.
  */
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { TableProperties } from 'lucide-react';
 import { cn } from '@/utils/styles';
 import type { DataTableProps } from '@/types/table';

@@ -64,17 +64,21 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
   };
 
   const handleActionSelect = (value: string) => {
-    onFilterChange({
-      ...filters,
-      action: value === 'all' ? undefined : (value as ActivityActionType),
-    });
+    const { action: _action, ...rest } = filters;
+    if (value === 'all') {
+      onFilterChange(rest);
+    } else {
+      onFilterChange({ ...filters, action: value as ActivityActionType });
+    }
   };
 
   const handleEntitySelect = (value: string) => {
-    onFilterChange({
-      ...filters,
-      entity_type: value === 'all' ? undefined : (value as ActivityEntityType),
-    });
+    const { entity_type: _entity_type, ...rest } = filters;
+    if (value === 'all') {
+      onFilterChange(rest);
+    } else {
+      onFilterChange({ ...filters, entity_type: value as ActivityEntityType });
+    }
   };
 
   const handleTimeSelect = (value: string) => {
@@ -102,7 +106,7 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
           <Select
             options={ACTION_OPTIONS}
             value={filters.action || 'all'}
-            onChange={handleActionSelect}
+            onChange={(e) => handleActionSelect(e.target.value)}
             aria-label="Filter by Event Type"
           />
         </div>
@@ -112,7 +116,7 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
           <Select
             options={ENTITY_OPTIONS}
             value={filters.entity_type || 'all'}
-            onChange={handleEntitySelect}
+            onChange={(e) => handleEntitySelect(e.target.value)}
             aria-label="Filter by Entity Type"
           />
         </div>
@@ -122,7 +126,7 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
           <Select
             options={TIME_OPTIONS}
             value={timePeriod}
-            onChange={handleTimeSelect}
+            onChange={(e) => handleTimeSelect(e.target.value)}
             aria-label="Filter by Time Period"
           />
         </div>
@@ -144,7 +148,10 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
                   Keyword: "{filters.search}"
                   <button
                     type="button"
-                    onClick={() => onFilterChange({ ...filters, search: undefined })}
+                    onClick={() => {
+                      const { search: _search, ...rest } = filters;
+                      onFilterChange(rest);
+                    }}
                     className="hover:text-purple-900 cursor-pointer"
                   >
                     <X className="w-3 h-3" />
@@ -157,7 +164,10 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
                   Event: {ACTION_OPTIONS.find((o) => o.value === filters.action)?.label}
                   <button
                     type="button"
-                    onClick={() => onFilterChange({ ...filters, action: undefined })}
+                    onClick={() => {
+                      const { action: _action, ...rest } = filters;
+                      onFilterChange(rest);
+                    }}
                     className="hover:text-blue-900 cursor-pointer"
                   >
                     <X className="w-3 h-3" />
@@ -170,7 +180,10 @@ export const ActivityFilters: React.FC<ActivityFilterBarProps> = ({
                   Entity: {ENTITY_OPTIONS.find((o) => o.value === filters.entity_type)?.label}
                   <button
                     type="button"
-                    onClick={() => onFilterChange({ ...filters, entity_type: undefined })}
+                    onClick={() => {
+                      const { entity_type: _entity_type, ...rest } = filters;
+                      onFilterChange(rest);
+                    }}
                     className="hover:text-amber-900 cursor-pointer"
                   >
                     <X className="w-3 h-3" />

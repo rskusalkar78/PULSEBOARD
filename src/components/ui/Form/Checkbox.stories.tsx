@@ -63,18 +63,24 @@ const InteractiveGroupDemo: React.FC = () => {
       <p className="text-sm font-semibold">Email Preferences:</p>
       <Checkbox
         label="Weekly Digest"
-        checked={checkedItems[0]}
-        onChange={(e) => setCheckedItems([e.target.checked, checkedItems[1], checkedItems[2]])}
+        checked={checkedItems[0] ?? false}
+        onChange={(e) =>
+          setCheckedItems([e.target.checked, checkedItems[1] ?? false, checkedItems[2] ?? false])
+        }
       />
       <Checkbox
         label="Product Updates"
-        checked={checkedItems[1]}
-        onChange={(e) => setCheckedItems([checkedItems[0], e.target.checked, checkedItems[2]])}
+        checked={checkedItems[1] ?? false}
+        onChange={(e) =>
+          setCheckedItems([checkedItems[0] ?? false, e.target.checked, checkedItems[2] ?? false])
+        }
       />
       <Checkbox
         label="Security Alerts"
-        checked={checkedItems[2]}
-        onChange={(e) => setCheckedItems([checkedItems[0], checkedItems[1], e.target.checked])}
+        checked={checkedItems[2] ?? false}
+        onChange={(e) =>
+          setCheckedItems([checkedItems[0] ?? false, checkedItems[1] ?? false, e.target.checked])
+        }
       />
     </div>
   );

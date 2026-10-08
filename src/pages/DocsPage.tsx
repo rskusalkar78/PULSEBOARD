@@ -36,7 +36,7 @@ interface DocSection {
 }
 
 export default function DocsPage() {
-  const { theme, toggleTheme } = useTheme();
+  const { resolvedTheme, setMode } = useTheme();
   const [activeSection, setActiveSection] = useState<string>('overview');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -783,7 +783,11 @@ npm run format:check`}</pre>
     );
   }, [sections, searchQuery]);
 
-  const activeDoc = sections.find((sec) => sec.id === activeSection) || sections[0];
+  const activeDoc = sections.find((sec) => sec.id === activeSection) ?? sections[0];
+
+  if (!activeDoc) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
@@ -826,11 +830,11 @@ npm run format:check`}</pre>
         {/* Theme Toggle & Back Button */}
         <div className="flex items-center gap-3">
           <button
-            onClick={toggleTheme}
+            onClick={() => setMode(resolvedTheme === 'dark' ? 'light' : 'dark')}
             className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             title="Toggle theme"
           >
-            {theme === 'dark' ? (
+            {resolvedTheme === 'dark' ? (
               <Sun className="h-5 w-5 text-amber-400" />
             ) : (
               <Moon className="h-5 w-5 text-slate-600" />

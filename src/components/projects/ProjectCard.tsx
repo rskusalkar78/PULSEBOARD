@@ -60,7 +60,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   onStatusChange,
 }) => {
   const statusInfo = statusConfig[project.status] || statusConfig.active;
-  const priorityInfo = priorityConfig[project.priority || 'medium'] || priorityConfig.medium;
+  const priorityFallback = priorityConfig['medium']!;
+  const priorityInfo = priorityConfig[project.priority || 'medium'] ?? priorityFallback;
   const StatusIcon = statusInfo.icon;
 
   const ownerName = project.owner?.full_name || project.owner?.email || 'Unassigned';
@@ -169,9 +170,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </Badge>
 
           <span
-            className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityInfo.colorClass}`}
+            className={`px-2 py-0.5 rounded-full text-xs font-medium ${priorityInfo?.colorClass ?? ''}`}
           >
-            {priorityInfo.label} Priority
+            {priorityInfo?.label ?? 'Medium'} Priority
           </span>
         </div>
       </div>

@@ -34,9 +34,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [filters, setFilters] = useState<FilterParams>({
-    project_id: initialProjectId,
-    team_id: initialTeamId,
-    actor_id: initialUserId,
+    ...(initialProjectId !== undefined && { project_id: initialProjectId }),
+    ...(initialTeamId !== undefined && { team_id: initialTeamId }),
+    ...(initialUserId !== undefined && { actor_id: initialUserId }),
   });
   const [timePeriod, setTimePeriod] = useState<'all' | 'today' | 'week' | 'month'>('all');
   const [page, setPage] = useState(1);
@@ -72,7 +72,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
       return {
         ...currentFilters,
-        date_from,
+        ...(date_from !== undefined && { date_from }),
       };
     },
     []
@@ -141,9 +141,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
   const handleResetFilters = () => {
     setFilters({
-      project_id: initialProjectId,
-      team_id: initialTeamId,
-      actor_id: initialUserId,
+      ...(initialProjectId !== undefined && { project_id: initialProjectId }),
+      ...(initialTeamId !== undefined && { team_id: initialTeamId }),
+      ...(initialUserId !== undefined && { actor_id: initialUserId }),
     });
     setTimePeriod('all');
     setPage(1);
@@ -165,7 +165,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     const thisWeek = new Date(today);
     thisWeek.setDate(thisWeek.getDate() - 7);
 
-    const groups: { [key: string]: ActivityWithRelations[] } = {
+    const groups: {
+      Today: ActivityWithRelations[];
+      Yesterday: ActivityWithRelations[];
+      'This Week': ActivityWithRelations[];
+      Earlier: ActivityWithRelations[];
+    } = {
       Today: [],
       Yesterday: [],
       'This Week': [],
@@ -305,7 +310,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
               <Select
                 options={PAGE_SIZE_OPTIONS}
                 value={String(pageSize)}
-                onChange={handlePageSizeChange}
+                onChange={(e) => handlePageSizeChange(e.target.value)}
                 aria-label="Items per page"
               />
             </div>

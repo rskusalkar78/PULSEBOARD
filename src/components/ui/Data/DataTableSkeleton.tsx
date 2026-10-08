@@ -3,7 +3,6 @@
  * Animates placeholder rows while data is being fetched.
  */
 
-import React from 'react';
 import { cn } from '@/utils/styles';
 
 interface DataTableSkeletonProps {

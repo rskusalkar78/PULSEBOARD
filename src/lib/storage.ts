@@ -106,6 +106,13 @@ export async function uploadFile(
   file: File,
   options: UploadOptions = {}
 ): Promise<UploadResult> {
+  if (!supabase) {
+    return {
+      path,
+      error: 'Supabase is not configured',
+    };
+  }
+
   try {
     // Validate file
     const validation = validateFile(file);
@@ -124,7 +131,6 @@ export async function uploadFile(
     });
 
     if (error) {
-      console.error('Upload error:', error);
       return {
         path,
         error: error.message,

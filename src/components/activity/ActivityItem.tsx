@@ -249,12 +249,12 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity, compact = 
         {/* Action Link Footer */}
         <div className="mt-2.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-            {meta.task_priority && (
+            {meta.task_priority !== undefined && (
               <span className="capitalize font-medium text-amber-600 dark:text-amber-400">
                 Priority: {String(meta.task_priority)}
               </span>
             )}
-            {meta.member_role && (
+            {meta.member_role !== undefined && (
               <span className="capitalize text-slate-500 dark:text-slate-400 flex items-center gap-1">
                 <Shield className="w-3 h-3" />
                 Role: {String(meta.member_role)}

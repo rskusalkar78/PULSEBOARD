@@ -117,6 +117,7 @@ export const GlobalSearchModal: React.FC = () => {
       }
       setQuery('');
       setFocusedIndex(0);
+      return undefined;
     }
   }, [isOpen, closeSearch]);
 
@@ -175,7 +176,7 @@ export const GlobalSearchModal: React.FC = () => {
           title: recent.item ? recent.item.title : recent.query || '',
           subtitle: recent.item?.subtitle || recent.item?.category || 'Recent search',
           href: recent.item?.href || '/projects',
-          item: recent.item,
+          ...(recent.item !== undefined && { item: recent.item }),
         });
       });
 

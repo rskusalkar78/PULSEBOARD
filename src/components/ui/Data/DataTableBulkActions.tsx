@@ -3,7 +3,6 @@
  * Renders bulk-action buttons with optional danger styling.
  */
 
-import React from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/utils/styles';
 import { useDataTableContext } from './DataTableContext';

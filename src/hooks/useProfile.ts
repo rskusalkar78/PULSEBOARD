@@ -116,7 +116,7 @@ export function useProfile() {
       updateUser({
         name: formData.fullName,
         email: formData.email,
-        role: formData.role,
+        ...(formData.role !== undefined ? { role: formData.role as ProfileUpdate['role'] } : {}),
         timezone: formData.timezone,
         bio: formData.bio,
         avatarUrl: formData.avatarUrl,

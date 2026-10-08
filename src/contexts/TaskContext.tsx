@@ -252,14 +252,14 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const page = newFilters ? 1 : pagination.page;
 
         const result = await taskService.advancedSearch({
-          query: currentFilters.search || undefined,
-          projectId: currentFilters.projectId || undefined,
-          status: currentFilters.status || undefined,
-          priority: currentFilters.priority || undefined,
-          assignedTo: currentFilters.assignedTo || undefined,
-          tags: currentFilters.tags || undefined,
-          dueDateFrom: currentFilters.dueDateFrom || undefined,
-          dueDateTo: currentFilters.dueDateTo || undefined,
+          ...(currentFilters.search ? { query: currentFilters.search } : {}),
+          ...(currentFilters.projectId ? { projectId: currentFilters.projectId } : {}),
+          ...(currentFilters.status ? { status: currentFilters.status } : {}),
+          ...(currentFilters.priority ? { priority: currentFilters.priority } : {}),
+          ...(currentFilters.assignedTo ? { assignedTo: currentFilters.assignedTo } : {}),
+          ...(currentFilters.tags ? { tags: currentFilters.tags } : {}),
+          ...(currentFilters.dueDateFrom ? { dueDateFrom: currentFilters.dueDateFrom } : {}),
+          ...(currentFilters.dueDateTo ? { dueDateTo: currentFilters.dueDateTo } : {}),
           sortBy: sort.sortBy,
           sortOrder: sort.sortOrder,
           page,
@@ -306,7 +306,7 @@ export function TaskProvider({ children }: TaskProviderProps) {
         const result = await taskService.search(query, {
           limit: pagination.limit,
           page: pagination.page,
-          projectId: filters.projectId || undefined,
+          ...(filters.projectId ? { projectId: filters.projectId } : {}),
         });
 
         if (!result.success) {

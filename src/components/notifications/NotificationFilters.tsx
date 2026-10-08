@@ -43,12 +43,10 @@ export const NotificationFilters: React.FC<NotificationFiltersProps> = ({
   categoryCounts,
   onMarkAllAsRead,
   onClearRead,
-  _onClearAll,
   onOpenPreferences,
   hasUnread,
   hasRead,
-  _hasTotal,
-}: NotificationFiltersProps & { _onClearAll?: () => void; _hasTotal?: boolean }) => {
+}) => {
   return (
     <div className="space-y-4">
       {/* Top Search & Actions Bar */}

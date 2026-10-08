@@ -140,8 +140,8 @@ export function isAuthorizationError(error: unknown): boolean {
       err.code === 'PERMISSION_ERROR' ||
       err.code === '42501' ||
       err.code === 'PGRST301' ||
-      err.message?.toLowerCase().includes('permission denied') ||
-      err.message?.toLowerCase().includes('policy')
+      err.message?.toLowerCase().includes('permission denied') === true ||
+      err.message?.toLowerCase().includes('policy') === true
     );
   }
 
@@ -186,8 +186,8 @@ export function isNetworkError(error: unknown): boolean {
     const err = error as { message?: string; code?: string };
     return (
       err.code === 'NETWORK_ERROR' ||
-      err.message?.toLowerCase().includes('network') ||
-      err.message?.toLowerCase().includes('fetch failed')
+      err.message?.toLowerCase().includes('network') === true ||
+      err.message?.toLowerCase().includes('fetch failed') === true
     );
   }
 

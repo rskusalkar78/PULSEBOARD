@@ -114,12 +114,13 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({
       key: 'priority',
       header: 'Priority',
       cell: (project: ProjectWithDetails) => {
-        const priorityInfo = priorityConfig[project.priority || 'medium'] || priorityConfig.medium;
+        const priorityFallback = priorityConfig['medium']!;
+        const priorityInfo = priorityConfig[project.priority || 'medium'] ?? priorityFallback;
         return (
           <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityInfo.colorClass}`}
+            className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${priorityInfo?.colorClass ?? ''}`}
           >
-            {priorityInfo.label}
+            {priorityInfo?.label ?? 'Medium'}
           </span>
         );
       },

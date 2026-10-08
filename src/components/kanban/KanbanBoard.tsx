@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { useToastContext } from '@/contexts/ToastContext';

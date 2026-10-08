@@ -44,7 +44,7 @@ export const ProjectDeleteModal: React.FC<ProjectDeleteModalProps> = ({
           <Button type="button" variant="ghost" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>
-          <Button type="button" variant="danger" loading={isDeleting} onClick={onConfirm}>
+          <Button type="button" variant="danger" isLoading={isDeleting} onClick={onConfirm}>
             Delete Project
           </Button>
         </div>

@@ -92,8 +92,8 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
         priority: project.priority || 'medium',
         visibility: project.visibility || 'team',
         progress: project.progress || 0,
-        start_date: project.start_date ? project.start_date.split('T')[0] : '',
-        due_date: project.due_date ? project.due_date.split('T')[0] : '',
+        start_date: project.start_date ? (project.start_date.split('T')[0] ?? '') : '',
+        due_date: project.due_date ? (project.due_date.split('T')[0] ?? '') : '',
         color: project.color || '#6366f1',
       });
     } else {
@@ -106,7 +106,7 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
         priority: 'medium',
         visibility: 'team',
         progress: 0,
-        start_date: new Date().toISOString().split('T')[0],
+        start_date: new Date().toISOString().split('T')[0] ?? '',
         due_date: '',
         color: '#6366f1',
       });
@@ -117,7 +117,10 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
   const handleChange = (field: keyof ProjectFormData, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === 'name' && errors.name) {
-      setErrors((prev) => ({ ...prev, name: undefined }));
+      setErrors((prev) => {
+        const { name: _name, ...rest } = prev;
+        return rest;
+      });
     }
   };
 
@@ -298,7 +301,7 @@ export const ProjectFormModal: React.FC<ProjectFormModalProps> = ({
             type="submit"
             variant="primary"
             data-testid="project-submit-button"
-            loading={isSubmitting}
+            isLoading={isSubmitting}
           >
             {isEditing ? 'Save Changes' : 'Create Project'}
           </Button>

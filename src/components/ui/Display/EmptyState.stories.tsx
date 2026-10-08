@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
 import { EmptyState } from './EmptyState';
 import { FolderOpen, Search, Inbox, AlertTriangle } from 'lucide-react';
 import { Button } from '../Button/Button';
