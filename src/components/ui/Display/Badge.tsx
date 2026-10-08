@@ -2,7 +2,8 @@ import React from 'react';
 import { cva, type VariantConfig } from '@/utils/styles';
 import { X } from 'lucide-react';
 
-export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'outline';
+export type BadgeVariant =
+  'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'outline';
 export type BadgeSize = 'sm' | 'md';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -28,6 +29,7 @@ const badgeVariantConfig: VariantConfig<{
         'bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
       danger:
         'bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
+      info: 'bg-sky-100 text-sky-800 dark:bg-sky-950/70 dark:text-sky-300 border border-sky-200 dark:border-sky-800',
       outline: 'border border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-300',
     },
     size: {
@@ -49,6 +51,7 @@ const dotColorMap: Record<BadgeVariant, string> = {
   success: 'bg-emerald-500',
   warning: 'bg-amber-500',
   danger: 'bg-rose-500',
+  info: 'bg-sky-500',
   outline: 'bg-slate-400',
 };
 

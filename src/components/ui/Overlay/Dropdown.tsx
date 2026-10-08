@@ -20,7 +20,7 @@ export interface DropdownItemConfig {
 
 export interface DropdownProps {
   children?: React.ReactNode;
-  className?: string;
+  className?: string | undefined;
   /** Shorthand: render a trigger button + items list without compound components */
   trigger?: React.ReactNode;
   items?: DropdownItemConfig[];
@@ -89,9 +89,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   <DropdownItem
                     key={item.id}
                     icon={item.icon}
-                    danger={item.danger}
-                    disabled={item.disabled}
-                    onClick={item.onClick}
+                    {...(item.danger !== undefined && { danger: item.danger })}
+                    {...(item.disabled !== undefined && { disabled: item.disabled })}
+                    {...(item.onClick !== undefined && { onClick: item.onClick })}
                   >
                     {item.label}
                   </DropdownItem>

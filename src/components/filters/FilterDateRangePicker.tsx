@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Calendar, ChevronDown } from 'lucide-react';
 import type { DateRangeFilter, DateRangePreset } from '@/types/filter';
-import { Dropdown } from '@/components/ui/Overlay/Dropdown';
+import { Dropdown, DropdownTrigger, DropdownContent } from '@/components/ui/Overlay/Dropdown';
 import { Button } from '@/components/ui/Button/Button';
 import { Input } from '@/components/ui/Form/Input';
 
 export interface FilterDateRangePickerProps {
-  value?: DateRangeFilter;
+  value?: DateRangeFilter | undefined;
   onChange: (val?: DateRangeFilter) => void;
-  className?: string;
+  className?: string | undefined;
 }
 
 const PRESETS: { label: string; value: DateRangePreset }[] = [
@@ -24,13 +24,17 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
   onChange,
   className,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [tempFrom, setTempFrom] = useState(value?.from || '');
   const [tempTo, setTempTo] = useState(value?.to || '');
 
   const handleSelectPreset = (preset: DateRangePreset) => {
     if (preset === 'custom') {
-      onChange({ preset: 'custom', from: tempFrom || undefined, to: tempTo || undefined });
+      const nextVal: DateRangeFilter = {
+        preset: 'custom',
+        ...(tempFrom ? { from: tempFrom } : {}),
+        ...(tempTo ? { to: tempTo } : {}),
+      };
+      onChange(nextVal);
     } else {
       const fromDate = new Date();
       if (preset === '7d') {
@@ -40,21 +44,20 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
       } else if (preset === '90d') {
         fromDate.setDate(fromDate.getDate() - 90);
       }
-      const fromStr = fromDate.toISOString().split('T')[0];
-      const toStr = new Date().toISOString().split('T')[0];
+      const fromStr = fromDate.toISOString().split('T')[0] ?? '';
+      const toStr = new Date().toISOString().split('T')[0] ?? '';
       onChange({ preset, from: fromStr, to: toStr });
     }
-    setIsOpen(false);
   };
 
   const handleApplyCustom = (e: React.FormEvent) => {
     e.preventDefault();
-    onChange({
+    const nextVal: DateRangeFilter = {
       preset: 'custom',
-      from: tempFrom || undefined,
-      to: tempTo || undefined,
-    });
-    setIsOpen(false);
+      ...(tempFrom ? { from: tempFrom } : {}),
+      ...(tempTo ? { to: tempTo } : {}),
+    };
+    onChange(nextVal);
   };
 
   const getLabel = () => {
@@ -76,24 +79,19 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
   const hasSelection = Boolean(value?.preset || value?.from || value?.to);
 
   return (
-    <Dropdown
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      className={className}
-      trigger={
+    <Dropdown className={className}>
+      <DropdownTrigger>
         <Button
           variant={hasSelection ? 'primary' : 'outline'}
           size="sm"
           leftIcon={<Calendar className="h-4 w-4" />}
           rightIcon={<ChevronDown className="h-3.5 w-3.5" />}
-          onClick={() => setIsOpen(!isOpen)}
           className="whitespace-nowrap"
         >
           {getLabel()}
         </Button>
-      }
-    >
-      <div className="w-64 p-3 space-y-3">
+      </DropdownTrigger>
+      <DropdownContent className="w-64 p-3 space-y-3">
         <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
           Presets
         </div>
@@ -125,9 +123,9 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
               </label>
               <Input
                 type="date"
-                size="sm"
                 value={tempFrom}
                 onChange={(e) => setTempFrom(e.target.value)}
+                className="h-8 text-xs"
               />
             </div>
             <div>
@@ -136,9 +134,9 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
               </label>
               <Input
                 type="date"
-                size="sm"
                 value={tempTo}
                 onChange={(e) => setTempTo(e.target.value)}
+                className="h-8 text-xs"
               />
             </div>
             <div className="flex gap-2 pt-1">
@@ -149,7 +147,6 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
                 className="w-full text-xs"
                 onClick={() => {
                   onChange(undefined);
-                  setIsOpen(false);
                 }}
               >
                 Reset
@@ -160,7 +157,7 @@ export const FilterDateRangePicker: React.FC<FilterDateRangePickerProps> = ({
             </div>
           </form>
         </div>
-      </div>
+      </DropdownContent>
     </Dropdown>
   );
 };
