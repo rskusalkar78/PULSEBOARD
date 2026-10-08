@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
 import { DataTable } from './DataTable';
 import type { ColumnDef } from '@/types/table';
 import { Badge } from '../Display/Badge';
@@ -21,11 +20,12 @@ const sampleColumns: ColumnDef<SampleItem>[] = [
     header: 'Status',
     accessorKey: 'status',
     enableSorting: true,
-    cell: (item) => {
+    cell: (ctx) => {
       const variantMap = { Active: 'success', Pending: 'warning', Archived: 'default' } as const;
+      const status = ctx.row.status;
       return (
-        <Badge variant={variantMap[item.status] || 'default'} dot>
-          {item.status}
+        <Badge variant={variantMap[status] || 'default'} dot>
+          {status}
         </Badge>
       );
     },
@@ -35,7 +35,7 @@ const sampleColumns: ColumnDef<SampleItem>[] = [
     header: 'Budget',
     accessorKey: 'budget',
     enableSorting: true,
-    cell: (item) => `$${item.budget.toLocaleString()}`,
+    cell: (ctx) => `$${ctx.row.budget.toLocaleString()}`,
   },
 ];
 

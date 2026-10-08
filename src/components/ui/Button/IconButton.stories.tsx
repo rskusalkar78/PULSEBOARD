@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
 import { IconButton } from './IconButton';
 import { Settings, Trash2, Plus, Bell, Search } from 'lucide-react';
 
