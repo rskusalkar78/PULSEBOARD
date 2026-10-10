@@ -79,6 +79,9 @@ export function NotificationsPage() {
       title: titles[type] || 'New Notification Alert',
       message: `Simulated ${type} event triggered at ${new Date().toLocaleTimeString()}`,
       action_url: type === 'assignment' ? '/tasks' : '/dashboard',
+      entity_type: null,
+      entity_id: null,
+      metadata: {},
     });
     setShowSimulateBanner(true);
     setTimeout(() => setShowSimulateBanner(false), 3000);

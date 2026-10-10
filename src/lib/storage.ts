@@ -205,6 +205,11 @@ export async function getSignedUrl(
   path: string,
   options: SignedUrlOptions = {}
 ): Promise<string | null> {
+  if (!supabase) {
+    console.error('Signed URL error: Supabase is not configured');
+    return null;
+  }
+
   try {
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -226,6 +231,10 @@ export async function getSignedUrl(
  * Get public URL for file
  */
 export function getPublicUrl(bucket: StorageBucket, path: string): string {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
   const {
     data: { publicUrl },
   } = supabase.storage.from(bucket).getPublicUrl(path);
@@ -237,6 +246,11 @@ export function getPublicUrl(bucket: StorageBucket, path: string): string {
  * Download file as blob
  */
 export async function downloadFile(bucket: StorageBucket, path: string): Promise<Blob | null> {
+  if (!supabase) {
+    console.error('Download error: Supabase is not configured');
+    return null;
+  }
+
   try {
     const { data, error } = await supabase.storage.from(bucket).download(path);
 
@@ -260,6 +274,11 @@ export async function downloadFile(bucket: StorageBucket, path: string): Promise
  * Delete file from storage
  */
 export async function deleteFile(bucket: StorageBucket, path: string): Promise<boolean> {
+  if (!supabase) {
+    console.error('Delete error: Supabase is not configured');
+    return false;
+  }
+
   try {
     const { error } = await supabase.storage.from(bucket).remove([path]);
 
@@ -279,6 +298,11 @@ export async function deleteFile(bucket: StorageBucket, path: string): Promise<b
  * Delete multiple files from storage
  */
 export async function deleteFiles(bucket: StorageBucket, paths: string[]): Promise<boolean> {
+  if (!supabase) {
+    console.error('Batch delete error: Supabase is not configured');
+    return false;
+  }
+
   try {
     const { error } = await supabase.storage.from(bucket).remove(paths);
 
@@ -302,6 +326,11 @@ export async function deleteFiles(bucket: StorageBucket, paths: string[]): Promi
  * List files in a directory
  */
 export async function listFiles(bucket: StorageBucket, path: string = '') {
+  if (!supabase) {
+    console.error('List files error: Supabase is not configured');
+    return [];
+  }
+
   try {
     const { data, error } = await supabase.storage.from(bucket).list(path);
 

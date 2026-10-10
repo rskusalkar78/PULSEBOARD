@@ -252,7 +252,18 @@ export type TaskInsert = Omit<Task, 'id' | 'created_at' | 'updated_at' | 'comple
 export type ActivityInsert = Omit<Activity, 'id' | 'created_at'> &
   Partial<Pick<Activity, 'project_id' | 'team_id' | 'metadata'>>;
 
-export type NotificationInsert = Omit<Notification, 'id' | 'created_at' | 'read' | 'read_at'> &
+export type NotificationInsert = Omit<
+  Notification,
+  | 'id'
+  | 'created_at'
+  | 'read'
+  | 'read_at'
+  | 'message'
+  | 'action_url'
+  | 'entity_type'
+  | 'entity_id'
+  | 'metadata'
+> &
   Partial<Pick<Notification, 'message' | 'action_url' | 'entity_type' | 'entity_id' | 'metadata'>>;
 
 export type AnalyticsEventInsert = Omit<AnalyticsEvent, 'id' | 'created_at'> &

@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { profileService } from '@/services/profile.service';
 import { validateAvatarFile, type ProfileFormData } from '@/features/auth/schemas/profileSchemas';
-import type { UserPreferences, ProfileUpdate } from '@/types/database.types';
+import type { UserPreferences, ProfileUpdate, UserRole } from '@/types/database.types';
 
 export function useProfile() {
   const { user, updateUser } = useAuth();
@@ -124,14 +124,13 @@ export function useProfile() {
       });
 
       try {
-        const updatePayload = {
+        const updatePayload: ProfileUpdate = {
           full_name: formData.fullName,
-          email: formData.email,
-          role: formData.role as unknown as ProfileUpdate['role'],
           timezone: formData.timezone,
           bio: formData.bio || null,
           avatar_url: formData.avatarUrl || null,
           preferences: formData.preferences as UserPreferences,
+          ...(formData.role !== undefined ? { role: formData.role as UserRole } : {}),
         };
 
         const response = await profileService.updateCurrentProfile(updatePayload);
