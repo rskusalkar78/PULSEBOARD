@@ -26,7 +26,7 @@ test.describe('2. Registration Flow', () => {
     await page.getByTestId('register-password').fill('StrongPass123!');
     await page.getByTestId('register-confirm-password').fill('StrongPass123!');
 
-    await page.getByTestId('register-terms').check();
+    await page.getByTestId('register-terms').check({ force: true });
     await page.getByTestId('register-submit').click();
 
     await expect(page.getByTestId('register-success')).toBeVisible();
