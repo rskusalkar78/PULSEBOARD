@@ -55,8 +55,8 @@ export const UserMenu: React.FC = () => {
     setIsOpen(false);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
