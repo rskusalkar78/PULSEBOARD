@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]): string {
   const classes: string[] = [];
 
   for (const input of inputs) {
-    if (!input) continue;
+    if (input === null || input === undefined || input === false || input === '') continue;
 
     if (typeof input === 'string' || typeof input === 'number') {
       classes.push(String(input));
@@ -48,8 +48,11 @@ export function cva<T extends Record<string, Record<string, string>>>(config: Va
 
     for (const [variantKey, variantOptions] of Object.entries(variants)) {
       const selectedValue = (mergedProps as Record<string, unknown>)[variantKey];
-      if (selectedValue && typeof selectedValue === 'string' && variantOptions[selectedValue]) {
-        result.push(variantOptions[selectedValue]);
+      if (selectedValue !== undefined && selectedValue !== null) {
+        const key = String(selectedValue);
+        if (variantOptions[key]) {
+          result.push(variantOptions[key]);
+        }
       }
     }
 
