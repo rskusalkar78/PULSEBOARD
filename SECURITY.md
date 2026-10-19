@@ -1,89 +1,74 @@
-# PulseBoard Security Audit Report & Policy
+# Security Policy
 
-**Audited Application:** PulseBoard Front-End & Supabase Integration  
-**Date:** October 2026  
-**Status:** Completed
+At PulseBoard, we take the security of our application, code, and user data very seriously. We appreciate the responsible disclosure of security issues and are committed to addressing vulnerabilities promptly and transparently.
 
 ---
 
-## 1. Executive Summary
+## Supported Versions
 
-A comprehensive security audit of **PulseBoard** was performed covering authentication flows, authorization controls, Supabase Row-Level Security (RLS) policies, environment variable configurations, vulnerability scan (`npm audit`), Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), API communication, and secrets management.
+Only the latest active minor release receives active security patches. We strongly encourage all users and deployment environments to stay up to date.
 
-All key findings, mitigation actions, and guidelines are detailed below.
-
----
-
-## 2. Key Audit Areas & Findings
-
-### 2.1 Authentication
-
-- **Implementation:** Authentication is managed via `@supabase/supabase-js` (with PKCE flow enabled for browser clients), with seamless fallback to local mock authentication when Supabase environment variables are unconfigured or set to placeholders.
-- **Session Handling:** Sessions are persisted with PKCE (`flowType: 'pkce'`), `autoRefreshToken: true`, and standard token lifecycle handling.
-- **Security Check:** Passwords are not logged. No plain text credentials stored in version control.
-
-### 2.2 Authorization & Client-Side Assumptions
-
-- **Client Role Handling:** Frontend role checks (e.g. `user.role === 'admin'`) govern UI visibility (tabs, admin actions, modals).
-- **Core Principle:** In single-page applications (SPAs), client-side authorization checks are purely for user experience and **must never be trusted as real access enforcement**.
-- **Enforcement:** True authorization is strictly delegated to Supabase PostgreSQL Row Level Security (RLS) policies and PostgreSQL triggers/functions.
-
-### 2.3 Supabase Row Level Security (RLS)
-
-- **RLS Verification:**
-  - Every table (`profiles`, `teams`, `team_members`, `projects`, `tasks`, `activities`, `notifications`, `analytics_events`) has RLS explicitly enabled (`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`).
-  - Strict policies exist for `SELECT`, `INSERT`, `UPDATE`, and `DELETE`.
-  - Immutable audit logs (`activities`) reject client updates and deletes, permitting only admin deletions for compliance/moderation.
-  - Multi-tenant data isolation is enforced with `auth.uid() = owner_id` and subqueries verifying team membership (`EXISTS (SELECT 1 FROM team_members ...)`).
-
-### 2.4 Environment Variables & Secrets Management
-
-- **Frontend vs Backend Keys:**
-  - Front-end applications must **NEVER** include the Supabase `service_role` secret key. The `service_role` key bypasses all RLS policies and grants full superuser access.
-  - PulseBoard only accepts `VITE_SUPABASE_ANON_KEY` (or publishable keys `sb_publishable_*`) and `VITE_SUPABASE_URL` via Vite environment variables.
-  - Active credentials found in `.env` were sanitized and replaced with standard placeholders (`https://your-project-ref.supabase.co` and `your-supabase-anon-key`).
-  - `.env`, `.env.local`, and build artifacts are strictly ignored in `.gitignore`.
-  - Git history inspection confirmed that no `.env` files were tracked or committed.
-
-### 2.5 Cross-Site Scripting (XSS)
-
-- **React Escaping:** UI components leverage standard JSX data binding, which natively HTML-escapes content before rendering.
-- **Dangerous Patterns Checked:**
-  - `dangerouslySetInnerHTML`: **0 occurrences found.**
-  - `innerHTML` manipulation: **0 occurrences found.**
-  - `eval()`: **0 occurrences found.**
-- **URL Sanity:** Links generated across tables and members either use safe routing (`react-router-dom`) or strictly typed URLs.
-
-### 2.6 Cross-Site Request Forgery (CSRF)
-
-- **Token-Based REST / Realtime:** Supabase client communicates with endpoints using Bearer Authorization JWT tokens in HTTP headers (`Authorization: Bearer <token>`), rather than ambient browser cookies.
-- **CSRF Immunity:** Because bearer tokens are not automatically attached by browsers across origins (unlike cookies), typical cross-site request forgery attacks cannot succeed.
-
-### 2.7 Insecure API Calls & Transport Security
-
-- **HTTPS Enforcement:** Production Supabase URLs enforce TLS (HTTPS / WSS for WebSockets).
-- **Global Headers:** Added client header identification (`x-application-name: pulseboard`) for request tracking.
-
-### 2.8 Dependency Vulnerabilities (`npm audit`)
-
-- **Scan Executed:** `npm audit` was run across all production and development dependencies.
-- **Findings Summary:**
-  - Total: 15 vulnerabilities (6 moderate, 7 high, 2 critical).
-  - Scope: All 15 advisories originate exclusively in **development/testing tooling** (`vitest` v3, `@vitest/mocker`, `tinypool`, `lint-staged`, and `@storybook/addon-essentials`).
-  - Zero vulnerable packages exist in production runtime dependencies (`react`, `react-dom`, `@supabase/supabase-js`, `recharts`, `lucide-react`, `zod`).
-  - Major upgrades (`vitest` 5.x / `@storybook` major revisions) are isolated to dev environments and should be scheduled during routine dependency maintenance without risking breaking test harness regressions.
+| Version | Supported          | Security Maintenance Status  |
+| ------- | ------------------ | ---------------------------- |
+| `0.1.x` | :white_check_mark: | Currently Supported (Active) |
+| `< 0.1` | :x:                | End of Life (Unsupported)    |
 
 ---
 
-## 3. Security Guidelines & Best Practices for Developers
+## Reporting a Vulnerability
 
-1. **Never commit `.env` or secrets**:
-   Keep all secrets in `.env.local` or environment secret managers. Only commit `.env.example` with non-sensitive template values.
-2. **Never expose `service_role` key in frontend**:
-   Use `service_role` solely in trusted backend servers or Supabase Edge Functions. Frontend clients must only ever receive the `anon` / public key.
-3. **Always pair UI guards with RLS policies**:
-   If a button is hidden for non-admins, ensure the underlying Supabase database table has an RLS policy rejecting mutations for that role.
-4. **Sanitize dynamic URLs**:
-   Avoid constructing unvalidated external URLs or javascript scheme strings (`javascript:`) in anchor tags.
-5. **Keep dependencies maintained**:
-   Regularly review `npm audit` and keep dev dependencies updated.
+**Please do NOT file public GitHub issues for security vulnerabilities.**
+
+If you believe you have discovered a vulnerability, security bug, or sensitive exposure in PulseBoard, please report it via private disclosure:
+
+1. **Email:** Send details to **rohankusalkar78@gmail.com** or use GitHub's [Private Vulnerability Reporting](https://github.com/rskusalkar78/PULSEBOARD/security/advisories/new).
+2. **Subject:** `[SECURITY DISCLOSURE] PulseBoard - Brief Summary`
+3. **Include in Report:**
+   - Detailed description of the vulnerability and attack vector.
+   - Exact steps to reproduce or Proof of Concept (PoC) code / requests.
+   - Affected components, routes, or files.
+   - Any suggested mitigations or patches if known.
+
+### Response Timeline
+
+- **Initial Acknowledgment:** Within 48 hours of receipt.
+- **Triage & Assessment:** Within 5 business days, including confirmation of severity and impact.
+- **Patch Release:** Target within 14 business days depending on complexity and affected subsystems.
+- **Public Disclosure:** Coordinated after a fix is verified and deployed.
+
+---
+
+## Architecture & Security Model
+
+PulseBoard is designed around defense-in-depth principles:
+
+### 1. Row Level Security (RLS)
+
+Client-side authorization checks are purely for UI/UX responsiveness and cannot be trusted as actual security boundaries. PulseBoard relies on PostgreSQL Row Level Security (RLS) policies within Supabase to enforce multi-tenant isolation and role-based permissions (`admin`, `manager`, `member`, `guest`).
+
+### 2. Environment Variables & Secret Separation
+
+- PulseBoard client runtime only uses publishable environment keys: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+- The Supabase `service_role` secret key must **NEVER** be committed to Git or bundled into client code. It bypasses RLS and is restricted to trusted server runtimes or edge functions.
+- Local configuration is stored in `.env.local` which is strictly ignored by version control.
+
+### 3. Cross-Site Scripting (XSS) Mitigation
+
+- React 19 natively escapes dynamic data rendered in JSX.
+- No instances of `dangerouslySetInnerHTML`, raw `innerHTML`, or `eval()` are permitted in the codebase.
+- Dynamic URLs are strictly typed and sanitized before being bound to anchor elements.
+
+### 4. Transport & Header Security
+
+- All production Supabase traffic is transmitted over HTTPS and secure WebSockets (WSS).
+- API requests include application tracking headers (`x-application-name: pulseboard`).
+- Sessions use standard Bearer Authorization tokens, eliminating ambient cookie CSRF vulnerabilities.
+
+---
+
+## Known Security Posture & Dependency Audit
+
+A periodic `npm audit` is performed during CI/CD checks:
+
+- Production runtime dependencies maintain 0 known vulnerabilities.
+- Development tooling dependencies (e.g. test mockers, Storybook documentation addons) are monitored and updated during regular maintenance cycles.

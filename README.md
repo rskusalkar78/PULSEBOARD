@@ -1,76 +1,139 @@
 # PULSEBOARD
 
-A modern, production-grade real-time dashboard and analytics platform built with React 19, TypeScript, Vite, and Tailwind CSS.
+<div align="center">
 
-## ✨ Features
+<p align="center">
+  <strong>A modern, enterprise-grade real-time dashboard and project management platform.</strong>
+</p>
 
-- 🎨 **Complete Theme System** — Light, Dark, and System modes with zero-flash switching
-- 🎯 **Design Tokens** — 150+ CSS variables for consistent styling
-- ♿ **WCAG AA Compliant** — Accessible color contrast ratios
-- 🔄 **Theme Persistence** — Remembers your preference across sessions
-- 🚀 **26+ UI Components** — Professional, accessible, and fully typed
-- 📱 **Responsive Design** — Mobile-first approach
+[![CI/CD Pipeline](https://github.com/rskusalkar78/PULSEBOARD/actions/workflows/ci.yml/badge.svg)](https://github.com/rskusalkar78/PULSEBOARD/actions/workflows/ci.yml)
+[![Deployment](https://img.shields.io/badge/deployment-active-brightgreen.svg?logo=vercel&logoColor=white)](https://pulseboard.vercel.app)
+[![Coverage](https://img.shields.io/badge/coverage-80%25%20target-brightgreen.svg?logo=vitest&logoColor=white)](https://github.com/rskusalkar78/PULSEBOARD/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg?logo=semver&logoColor=white)](package.json)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+
+[Features](#-key-features) •
+[Screenshots](#-screenshots) •
+[Architecture](#-project-architecture) •
+[Quick Start](#-getting-started) •
+[Storybook](#-storybook-component-system) •
+[Contributing](#-contributing) •
+[Security](#-security-policy)
+
+</div>
+
+---
+
+## 📸 Screenshots
+
+### 1. Executive Dashboard
+
+> High-level workspace overview featuring key metrics, productivity scores, activity velocity, quick actions, and real-time team presence.
+
+![Executive Dashboard](docs/screenshots/dashboard.png)
+
+### 2. Analytics & Productivity Trends
+
+> Detailed productivity analytics with interactive charts, KPI comparison, efficiency rates, and custom timeframe filtering.
+
+![Analytics & Productivity Trends](docs/screenshots/analytics.png)
+
+### 3. Project Management
+
+> Multi-project portfolio management with progress tracking, priority labeling, team leads, and category filters.
+
+![Project Management](docs/screenshots/project-management.png)
+
+### 4. Interactive Kanban Board
+
+> Agile task management board powered by drag-and-drop workflows across Backlog, Todo, In Progress, Review, and Done.
+
+![Interactive Kanban Board](docs/screenshots/kanban.png)
+
+### 5. Storybook Component Workbench
+
+> Isolated UI component development environment with 26+ accessible, typed design components and a11y audit suite.
+
+![Storybook UI Workbench](docs/screenshots/storybook.png)
+
+### 6. Technical Documentation Portal
+
+> Built-in interactive developer and architecture documentation detailing APIs, database schemas, and theme design tokens.
+
+![Documentation Portal](docs/screenshots/documentation.png)
+
+---
+
+## ✨ Key Features
+
+- 🎨 **Unified Design Token System**: 150+ CSS variables power cohesive color palettes, elevations, and layout metrics.
+- 🌓 **Zero-Flash Theme Engine**: Seamless switching between Light, Dark, and System modes with immediate persistence.
+- ♿ **Accessible by Design**: All components follow WCAG AA contrast standards and WAI-ARIA keyboard navigation patterns.
+- 📊 **Dynamic Visualizations**: Responsive data charts powered by Recharts with custom tooltips and gradient accents.
+- 📋 **Agile Kanban Board**: Drag-and-drop task workflow with priorities, tag categorization, and dual List/Board view modes.
+- 🔐 **Supabase & Local Resilience**: Full Supabase authentication with Row-Level Security (RLS) and automatic local mock fallback.
+- 🧪 **Enterprise Test Suite**: Unit, integration, and E2E coverage across Vitest and Playwright.
+- 🛠️ **Developer Experience**: TypeScript strict mode, path aliases (`@/*`), ESLint 9, Prettier, Husky, and lint-staged.
+
+---
 
 ## 🚀 Tech Stack
 
-- **Framework**: [React 19](https://react.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
-- **Build Tool**: [Vite 6](https://vite.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Linting & Formatting**: [ESLint](https://eslint.org/) (Flat Config) + [Prettier](https://prettier.io/)
-- **Git Hooks**: [Husky](https://typicode.github.io/husky/) + [lint-staged](https://github.com/lint-staged/lint-staged)
-- **Testing**: [Vitest](https://vitest.dev/)
+| Domain              | Technology                                                                | Description                                               |
+| :------------------ | :------------------------------------------------------------------------ | :-------------------------------------------------------- |
+| **Framework**       | [React 19](https://react.dev/)                                            | Core UI rendering engine                                  |
+| **Language**        | [TypeScript](https://www.typescriptlang.org/)                             | Strict type-safety across models and components           |
+| **Build Tool**      | [Vite 6](https://vite.dev/)                                               | Instant HMR development and optimized production bundling |
+| **Styling**         | [Tailwind CSS v4](https://tailwindcss.com/)                               | Modern utility-first styling with design token support    |
+| **Icons**           | [Lucide React](https://lucide.dev/)                                       | Clean, consistent SVG icon set                            |
+| **Charts**          | [Recharts](https://recharts.org/)                                         | Declarative charting library built on React and SVG       |
+| **Drag & Drop**     | [@hello-pangea/dnd](https://github.com/hello-pangea/dnd)                  | Accessible drag-and-drop board management                 |
+| **Form Management** | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) | High-performance schema validation                        |
+| **Backend & Auth**  | [Supabase](https://supabase.com/)                                         | PostgreSQL backend with Row-Level Security (RLS)          |
+| **Testing**         | [Vitest](https://vitest.dev/) & [Playwright](https://playwright.dev/)     | Unit test runner and cross-browser E2E automation         |
+| **Documentation**   | [Storybook 8](https://storybook.js.org/)                                  | Isolated component workbench and design system guide      |
 
 ---
 
 ## 📁 Project Architecture
 
 ```
-src/
-├── app/          # Core application setup (App shell, providers)
-├── components/   # Reusable UI components (buttons, cards, inputs)
-├── features/     # Feature-based domain modules
-├── layouts/      # Page layout templates (Header, Sidebar, Shell)
-├── pages/        # Route pages
-├── hooks/        # Custom React hooks
-├── lib/          # Third-party library initializations & configurations
-├── services/     # API services and data fetching clients
-├── stores/       # Application state management stores
-├── types/        # TypeScript type definitions and interfaces
-├── utils/        # Helper utility functions
-├── constants/    # Global constants and config objects
-├── assets/       # Static media files (images, icons, fonts)
-└── styles/       # Global CSS stylesheets and Tailwind config
+PULSEBOARD/
+├── .github/                  # GitHub workflows & community templates
+│   ├── ISSUE_TEMPLATE/       # Bug report & feature request issue templates
+│   ├── workflows/            # CI/CD pipeline automation (ci.yml)
+│   └── pull_request_template.md # Standard PR checklist
+├── docs/                     # Static media & repository documentation
+│   └── screenshots/          # High-resolution application screenshots
+├── e2e/                      # Playwright end-to-end test scenarios
+├── src/
+│   ├── app/                  # Application shell, router, and root providers
+│   ├── assets/               # Static media and icons
+│   ├── components/           # Reusable UI component library (Button, Dialog, etc.)
+│   ├── constants/            # Application constants and configuration
+│   ├── contexts/             # Global React state contexts (Auth, Task, Toast)
+│   ├── features/             # Feature domain modules
+│   ├── hooks/                # Custom React lifecycle and data hooks
+│   ├── layouts/              # AppLayout, DashboardLayout, and AuthLayout
+│   ├── lib/                  # Third-party client initializations (Supabase)
+│   ├── pages/                # Route page implementations
+│   ├── schemas/              # Zod schema definitions
+│   ├── services/             # Supabase & mock API service layer
+│   ├── styles/               # Design tokens and global CSS
+│   ├── types/                # TypeScript interface and type declarations
+│   └── utils/                # Helper functions and utilities
+├── supabase/                 # Supabase database schema and RLS migrations
+├── .storybook/               # Storybook configuration & preview settings
+├── CHANGELOG.md              # Historical version release log
+├── CODE_OF_CONDUCT.md        # Community guidelines (Contributor Covenant 2.1)
+├── CONTRIBUTING.md           # Contribution and local setup guidelines
+├── LICENSE                   # Open-source MIT License
+├── package.json              # Dependencies and project scripts
+├── README.md                 # Primary repository documentation
+├── SECURITY.md               # Responsible vulnerability disclosure policy
+└── vite.config.ts            # Vite build configuration and aliases
 ```
-
----
-
-## 🛠️ Path Aliases
-
-Use the `@/*` alias to import modules relative to the `src/` directory:
-
-```typescript
-import { Button } from '@/components';
-import { useAuth } from '@/hooks';
-```
-
----
-
-## ⚙️ Environment Variables
-
-Copy `.env.example` to `.env` to configure your environment variables:
-
-```bash
-cp .env.example .env
-```
-
-Available variables:
-
-| Variable            | Description                               | Default                     |
-| ------------------- | ----------------------------------------- | --------------------------- |
-| `VITE_APP_TITLE`    | Application Title                         | `PulseBoard`                |
-| `VITE_APP_ENV`      | Environment (`development`, `production`) | `development`               |
-| `VITE_API_BASE_URL` | Base API Endpoint URL                     | `http://localhost:3000/api` |
 
 ---
 
@@ -78,89 +141,100 @@ Available variables:
 
 ### Prerequisites
 
-- **Node.js**: `>= 20.0.0`
+- **Node.js**: `>= 20.0.0` (LTS recommended)
 - **npm**: `>= 10.0.0`
 
 ### Installation
 
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/rskusalkar78/PULSEBOARD.git
+   cd PULSEBOARD
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Setup environment variables:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   _(PulseBoard runs out of the box with offline mock services if Supabase credentials are left as placeholders)._
+
+4. Launch the development server:
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+PulseBoard maintains rigorous testing standards across unit, component, integration, and end-to-end levels:
+
 ```bash
-npm install
-```
+# Run unit and integration tests
+npm run test
 
-### Development Server
+# Run tests with code coverage analysis
+npm run test:coverage
 
-Start the local Vite development server:
+# Run Playwright end-to-end tests
+npm run test:e2e
 
-```bash
-npm run dev
-```
+# Run TypeScript typecheck
+npm run typecheck
 
-### Production Build
+# Run ESLint checks
+npm run lint
 
-Typecheck and build for production:
-
-```bash
-npm run build
-```
-
-Preview the production build locally:
-
-```bash
-npm run preview
+# Validate Prettier formatting
+npm run format:check
 ```
 
 ---
 
-## 🎨 Theme System
+## 📚 Storybook Component System
 
-PulseBoard includes a comprehensive theme system with:
+Explore and test UI components in isolation with interactive state controls:
 
-- **Light Theme** — Clean, bright interface for daytime use
-- **Dark Theme** — Eye-friendly dark mode for low-light environments
-- **System Theme** — Automatically follows your OS preference
-- **Zero Flash** — No white flash on page load
-- **150+ Design Tokens** — Colors, typography, spacing, shadows, and more
-- **WCAG AA Compliant** — All color combinations meet accessibility standards
-
-### Quick Start
-
-```tsx
-import { useTheme } from '@/context/ThemeContext';
-import { ThemeToggle } from '@/components/ui/Display/ThemeToggle';
-
-function MyComponent() {
-  const { mode, resolvedTheme, isDark } = useTheme();
-
-  return (
-    <div>
-      <ThemeToggle size="md" />
-      <p>Current theme: {resolvedTheme}</p>
-    </div>
-  );
-}
+```bash
+# Start local Storybook development server
+npm run storybook
 ```
 
-### Documentation
+Open [http://localhost:6006](http://localhost:6006) to browse interactive documentation for all 26+ UI primitives.
 
-- 📖 [Complete Theme Documentation](./THEME_SYSTEM.md)
-- 🔖 [Quick Reference Guide](./THEME_QUICK_REFERENCE.md)
-- ✅ [Milestone 04 Verification](./MILESTONE_04_VERIFICATION.md)
+To generate a static build of the Storybook:
 
-### Testing
-
-Visit these pages to test the theme system:
-
-- **Theme Verification**: http://localhost:5173/theme-verification
-- **Design System**: http://localhost:5173/design-system
+```bash
+npm run build-storybook
+```
 
 ---
 
-## 🧪 Testing & Code Quality
+## 🤝 Contributing
 
-| Script                 | Action                               |
-| ---------------------- | ------------------------------------ |
-| `npm run lint`         | Run ESLint across all codebase files |
-| `npm run format`       | Auto-format files using Prettier     |
-| `npm run format:check` | Check code formatting compliance     |
-| `npm run test`         | Run Vitest unit tests                |
-| `npm run test:watch`   | Run Vitest in watch mode             |
+Contributions are welcome and appreciated! Please read our [Contributing Guidelines](CONTRIBUTING.md) to learn how to propose bug fixes, features, and pull requests.
+
+Please review our [Code of Conduct](CODE_OF_CONDUCT.md) before participating in discussions.
+
+---
+
+## 🔒 Security Policy
+
+For vulnerability reporting procedures and disclosure timelines, please see our [Security Policy](SECURITY.md). Please do **not** report security vulnerabilities via public GitHub issues.
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).  
+Copyright (c) 2026 Rohan Shankar Kusalkar.
