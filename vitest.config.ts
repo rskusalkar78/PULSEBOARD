@@ -25,10 +25,23 @@ export default defineConfig({
       },
     },
   },
+
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+
+    // Discover unit tests in src and exclude Playwright E2E tests.
+    include: ['src/**/*.{test,spec}.{ts,tsx,js,jsx}'],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/e2e/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
+      '**/.{git,idea,cache,output,temp}/**',
+    ],
+
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -52,17 +65,16 @@ export default defineConfig({
         'src/styles/**',
         'src/assets/**',
       ],
-      include: ['src/**/*.{ts,tsx,js,jsx}'],
-      // Target 90% coverage for critical business logic
+      // More specific thresholds for critical business logic
       thresholds: {
         lines: 70,
         functions: 70,
         branches: 65,
         statements: 70,
       },
-      // More specific thresholds for critical paths
       perFile: true,
     },
+
     testTimeout: 10000,
     hookTimeout: 10000,
   },
